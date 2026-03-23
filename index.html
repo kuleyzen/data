@@ -72,7 +72,7 @@
                 if(t[key]) el.innerText = t[key];
             });
 
-            // Wenn die Tabelle schon offen ist, auch diese sofort in die neue Sprache übersetzen
+            // Wenn die Tabelle schon offen ist, auch diese sofort übersetzen
             if (window.lastReportData) {
                 renderTable(window.lastReportData);
             }
@@ -86,32 +86,42 @@
         .btn-kuleyzen:hover { background-color: #155a15; }
         .btn-kuleyzen:disabled { background-color: #4b634b; cursor: not-allowed; }
         .marker-b { filter: hue-rotate(140deg); }
-        .lang-btn { cursor: pointer; padding: 2px 8px; font-size: 11px; font-weight: bold; color: white; opacity: 0.8; }
-        .lang-btn:hover { opacity: 1; text-decoration: underline; }
+        .lang-btn { cursor: pointer; padding: 4px 10px; font-size: 11px; font-weight: bold; color: white; opacity: 0.8; transition: 0.2s; }
+        .lang-btn:hover { opacity: 1; background-color: rgba(255,255,255,0.2); border-radius: 4px; }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-white" onload="setLanguage('tr')">
 
-    <header class="header-bg text-white py-12 px-6 text-center relative shadow-md">
-        <div class="absolute top-6 right-6"><img src="logo.png" alt="Logo" class="h-12 w-auto"></div>
-        <div class="absolute top-20 right-6 flex space-x-2 bg-black/10 p-1 rounded">
-            <span class="lang-btn" onclick="setLanguage('tr')">TR</span>
-            <span class="lang-btn" onclick="setLanguage('de')">DE</span>
-            <span class="lang-btn" onclick="setLanguage('en')">EN</span>
+    <header class="header-bg text-white pt-6 pb-12 px-6 relative shadow-md">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex justify-end items-start mb-6 md:mb-10">
+                <div class="flex flex-col items-end space-y-4">
+                    <img src="logo.png" alt="Logo" class="h-12 md:h-14 w-auto bg-white p-1 rounded shadow">
+                    
+                    <div class="flex space-x-1 bg-black/20 p-1 rounded">
+                        <span class="lang-btn" onclick="setLanguage('tr')">TR</span>
+                        <span class="lang-btn" onclick="setLanguage('de')">DE</span>
+                        <span class="lang-btn" onclick="setLanguage('en')">EN</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <h1 class="text-3xl md:text-5xl font-bold tracking-widest uppercase drop-shadow-md" data-i18n="title">Kuleyzen Data</h1>
+                <p class="text-xs md:text-sm mt-4 italic opacity-90 max-w-xl mx-auto leading-relaxed" data-i18n="subtitle">Proje Yönetimi & Outsourcing – Yerel değerlere bağlı, küresel standartlarla yönetilen.</p>
+            </div>
         </div>
-        <h1 class="text-3xl font-bold tracking-widest uppercase" data-i18n="title">Kuleyzen Data</h1>
-        <p class="text-sm italic opacity-80" data-i18n="subtitle">Project Management & Outsourcing</p>
     </header>
 
-    <nav class="bg-gray-100 py-3 text-center border-b sticky top-0 z-50">
-        <div class="flex justify-center space-x-8 text-xs font-bold uppercase tracking-widest">
+    <nav class="bg-gray-100 py-3 px-2 text-center border-b sticky top-0 z-50 shadow-sm">
+        <div class="flex justify-center space-x-4 md:space-x-8 text-[10px] md:text-xs font-bold uppercase tracking-widest">
             <a href="https://kuleyzen.com" class="text-kuleyzen-green hover:opacity-70" data-i18n="navFarm">Kuleyzen Çiftliği</a>
             <a href="https://consulting.kuleyzen.com" class="text-kuleyzen-green hover:opacity-70" data-i18n="navConsulting">Danışmanlık</a>
             <a href="#" class="text-kuleyzen-green border-b-2 border-kuleyzen-green pb-1" data-i18n="navData">Veri Uygulaması</a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-10 px-6">
+    <main class="max-w-7xl mx-auto py-10 px-4 md:px-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 space-y-6">
                 <div class="bg-white p-6 border shadow-sm rounded-sm">
@@ -119,27 +129,27 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="startLabel">Başlangıç</label>
-                            <input type="date" id="startDate" value="2022-01-01" class="w-full border-b p-1 outline-none focus:border-kuleyzen-green">
+                            <input type="date" id="startDate" value="2022-01-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="endLabel">Bitiş</label>
-                            <input type="date" id="endDate" value="2022-03-01" class="w-full border-b p-1 outline-none focus:border-kuleyzen-green">
+                            <input type="date" id="endDate" value="2022-03-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div class="pt-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block" data-i18n="paramTitle">Parametreler</label>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <label class="flex items-center"><input type="checkbox" id="pRain" checked class="mr-2"> <span data-i18n="paramRain">Yağış</span></label>
-                                <label class="flex items-center"><input type="checkbox" id="pTemp" checked class="mr-2"> <span data-i18n="paramTemp">Sıcaklık</span></label>
-                                <label class="flex items-center"><input type="checkbox" id="pSun" checked class="mr-2"> <span data-i18n="paramSun">Güneş</span></label>
-                                <label class="flex items-center"><input type="checkbox" id="pWind" class="mr-2"> <span data-i18n="paramWind">Rüzgar</span></label>
+                            <div class="grid grid-cols-2 gap-3 text-xs">
+                                <label class="flex items-center"><input type="checkbox" id="pRain" checked class="mr-2 w-4 h-4"> <span data-i18n="paramRain">Yağış</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pTemp" checked class="mr-2 w-4 h-4"> <span data-i18n="paramTemp">Sıcaklık</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pSun" checked class="mr-2 w-4 h-4"> <span data-i18n="paramSun">Güneş</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pWind" class="mr-2 w-4 h-4"> <span data-i18n="paramWind">Rüzgar</span></label>
                             </div>
                         </div>
-                        <div class="py-2 border-t">
-                            <label class="flex items-center text-xs cursor-pointer group">
-                                <input type="checkbox" id="compareMode" class="mr-2"> <span class="group-hover:text-kuleyzen-green" data-i18n="compareLabel">Karşılaştırma Modu</span>
+                        <div class="py-4 border-t mt-2">
+                            <label class="flex items-center text-xs cursor-pointer group font-semibold text-gray-700">
+                                <input type="checkbox" id="compareMode" class="mr-2 w-4 h-4 text-kuleyzen-green"> <span class="group-hover:text-kuleyzen-green transition" data-i18n="compareLabel">Karşılaştırma Modu</span>
                             </label>
                         </div>
-                        <button onclick="startAnalysis()" id="btnAction" class="w-full btn-kuleyzen py-4 font-bold text-xs uppercase tracking-widest shadow-md" data-i18n="btnAction">VERİLERİ ANALİZ ET</button>
+                        <button onclick="startAnalysis()" id="btnAction" class="w-full btn-kuleyzen py-4 font-bold text-xs md:text-sm uppercase tracking-widest shadow-md rounded-sm" data-i18n="btnAction">VERİLERİ ANALİZ ET</button>
                     </div>
                 </div>
             </div>
@@ -149,10 +159,10 @@
             </div>
         </div>
 
-        <div id="previewSection" class="mt-10 hidden bg-white border shadow-sm p-8 rounded-sm">
-            <div class="flex flex-col md:flex-row justify-between items-center border-b-2 border-kuleyzen-green pb-4 mb-6">
+        <div id="previewSection" class="mt-10 hidden bg-white border shadow-sm p-6 md:p-8 rounded-sm">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b-2 border-kuleyzen-green pb-4 mb-6">
                 <h2 class="text-xl font-bold text-kuleyzen-green uppercase tracking-widest" data-i18n="previewTitle">VERİ ÖNİZLEME</h2>
-                <button onclick="generatePDF()" id="btnPdf" class="mt-4 md:mt-0 btn-kuleyzen px-8 py-3 text-[10px] font-bold uppercase tracking-widest shadow-md">
+                <button onclick="generatePDF()" id="btnPdf" class="mt-4 md:mt-0 w-full md:w-auto btn-kuleyzen px-8 py-3 text-[10px] font-bold uppercase tracking-widest shadow-md rounded-sm">
                     <span data-i18n="btnPdf">PDF İNDİR</span>
                 </button>
             </div>
@@ -161,7 +171,7 @@
     </main>
 
     <footer class="bg-gray-100 py-12 text-center border-t mt-12">
-        <p class="text-[11px] text-gray-500 tracking-[0.2em] uppercase" data-i18n="footer">Kuleyzen Data © 2026 – Altınözü, Türkiye</p>
+        <p class="text-[10px] md:text-[11px] text-gray-500 tracking-[0.2em] uppercase" data-i18n="footer">Kuleyzen Data © 2026 – Altınözü, Türkiye</p>
     </footer>
 
     <script>
@@ -258,16 +268,16 @@
                 </tr></thead><tbody>`;
             
             if(data.a.rain) {
-                html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.rain}</td>` : ''}</tr>`;
+                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.rain}</td>` : ''}</tr>`;
             }
             if(data.a.tempAvg) {
-                html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.tempAvg}</td>` : ''}</tr>`;
+                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.tempAvg}</td>` : ''}</tr>`;
             }
             if(data.a.sun) {
-                html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.sun}</td>` : ''}</tr>`;
+                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.sun}</td>` : ''}</tr>`;
             }
             if(data.a.wind) {
-                html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.wind}</td>` : ''}</tr>`;
+                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.wind}</td>` : ''}</tr>`;
             }
             
             html += `</tbody></table>`;
