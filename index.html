@@ -9,7 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         tailwind.config = {
@@ -34,7 +33,7 @@
                 errorPdf: "PDF Hatası! Lütfen tekrar deneyin.", errorConn: "Bağlantı Hatası! Lütfen sayfayı yenileyin.",
                 tblParam: "Parametre", tblLocA: "Lokasyon A", tblLocB: "Lokasyon B",
                 tblRain: "Toplam Yağış (mm)", tblTemp: "Ortalama Sıcaklık (°C)", tblSun: "Güneşlenme (kWh/m²)", tblWind: "Rüzgar Hızı (m/s)",
-                tblMatrixTitle: "AYLIK KARŞILAŞTIRMA TABLOSU (Yağış / mm)", tblAvg: "ORTALAMA", tblYear: "Yıl", tblTotal: "Toplam"
+                tblMatrixTitle: "AYLIK YAĞIŞ TABLOSU", tblAvg: "ORTALAMA", tblYear: "Yıl", tblTotal: "Toplam"
             },
             en: {
                 title: "Kuleyzen Data", subtitle: "Project Management & Outsourcing – Global Standards.",
@@ -48,7 +47,7 @@
                 errorPdf: "PDF Error! Please try again.", errorConn: "Connection Error! Please refresh the page.",
                 tblParam: "Parameter", tblLocA: "Location A", tblLocB: "Location B",
                 tblRain: "Total Rain (mm)", tblTemp: "Avg. Temperature (°C)", tblSun: "Insolation (kWh/m²)", tblWind: "Wind Speed (m/s)",
-                tblMatrixTitle: "MONTHLY COMPARISON TABLE (Rain / mm)", tblAvg: "AVERAGE", tblYear: "Year", tblTotal: "Total"
+                tblMatrixTitle: "MONTHLY RAIN MATRIX", tblAvg: "AVERAGE", tblYear: "Year", tblTotal: "Total"
             },
             de: {
                 title: "Kuleyzen Data", subtitle: "Projektmanagement & Outsourcing – Lokale Werte.",
@@ -62,12 +61,12 @@
                 errorPdf: "PDF-Fehler! Bitte erneut versuchen.", errorConn: "Verbindungsfehler! Bitte Seite neu laden.",
                 tblParam: "Parameter", tblLocA: "Standort A", tblLocB: "Standort B",
                 tblRain: "Niederschlag (mm)", tblTemp: "Ø Temperatur (°C)", tblSun: "Sonneneinstrahlung (kWh/m²)", tblWind: "Windgeschwindigkeit (m/s)",
-                tblMatrixTitle: "MONATLICHE VERGLEICHSTABELLE (Niederschlag / mm)", tblAvg: "DURCHSCHNITT", tblYear: "Jahr", tblTotal: "Gesamt"
+                tblMatrixTitle: "MONATLICHE NIEDERSCHLAGSMATRIX", tblAvg: "DURCHSCHNITT", tblYear: "Jahr", tblTotal: "Gesamt"
             }
         };
 
         const monthNames = {
-            tr: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            tr: ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"],
             en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             de: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
         };
@@ -131,11 +130,11 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="startLabel">Başlangıç</label>
-                            <input type="date" id="startDate" value="1981-01-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
+                            <input type="date" id="startDate" value="2018-01-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="endLabel">Bitiş</label>
-                            <input type="date" id="endDate" value="2026-03-23" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
+                            <input type="date" id="endDate" value="2024-12-31" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div class="pt-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block" data-i18n="paramTitle">Parametreler</label>
@@ -202,8 +201,19 @@
             }
         });
 
-        // WICHTIG: Deine aktuelle und korrekte URL!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5WQy_MFkejSoQaLR3iftjd_6QFbW2_48ORqRrQ2a1e3Cjl87vjFAqaahLCLDsVe7Pjw/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSoVP28lhg06g5rPnzn_KdBYZn0pkegsnz50jZn7jnZq37IH4ZT2W-6L73iuF54WmCkg/exec';
+
+        // Helfer-Funktion: Koordinaten in Ortsnamen umwandeln
+        async function getPlaceName(lat, lon, lang) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=${lang}`);
+                const data = await res.json();
+                if (data && data.address) {
+                    return data.address.city || data.address.town || data.address.village || data.address.county || data.address.province || "Bilinmeyen Konum";
+                }
+            } catch(e) { console.warn("Geocoding fehlgeschlagen", e); }
+            return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+        }
 
         async function startAnalysis() {
             const t = translations[window.currentLang || 'tr'];
@@ -214,12 +224,21 @@
             btn.innerText = t.loadingData;
             btn.disabled = true;
 
+            // Ortsnamen vor der Abfrage generieren
+            const nameA = await getPlaceName(coordsA.lat, coordsA.lng, window.currentLang || 'tr');
+            let nameB = null;
+            if (isCompare && coordsB) {
+                nameB = await getPlaceName(coordsB.lat, coordsB.lng, window.currentLang || 'tr');
+            }
+
             const payload = {
                 action: "getData",
                 lang: window.currentLang || 'tr',
                 start: document.getElementById('startDate').value,
                 end: document.getElementById('endDate').value,
                 latA: coordsA.lat, lonA: coordsA.lng,
+                nameA: nameA, // Neuer Parameter für das Backend
+                nameB: nameB, // Neuer Parameter für das Backend
                 isCompare: isCompare,
                 latB: isCompare ? coordsB.lat : null,
                 lonB: isCompare ? coordsB.lng : null,
@@ -252,8 +271,8 @@
             let html = `<table class="w-full text-left text-sm border-collapse bg-white border border-gray-100">
                 <thead><tr class="bg-gray-100 border-b">
                     <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">${t.tblParam}</th>
-                    <th class="p-4 border-r font-bold text-kuleyzen-green uppercase tracking-tighter">${t.tblLocA}</th>
-                    ${data.isCompare ? `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">${t.tblLocB}</th>` : ''}
+                    <th class="p-4 border-r font-bold text-kuleyzen-green uppercase tracking-tighter">${data.nameA}</th>
+                    ${data.isCompare ? `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">${data.nameB}</th>` : ''}
                 </tr></thead><tbody>`;
             
             if(data.a.rain) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold text-blue-600">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-blue-800">${data.b.rain}</td>` : ''}</tr>`;
@@ -263,7 +282,7 @@
             html += `</tbody></table>`;
 
             // 2. MONATS-MATRIX (Unten)
-            let matrixHtml = `<h3 class="mt-12 text-md font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${t.tblMatrixTitle}</h3>
+            let matrixHtml = `<h3 class="mt-12 text-md font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${t.tblMatrixTitle} (${data.nameA})</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-right text-xs border-collapse border border-gray-200">
                         <thead>
@@ -275,7 +294,6 @@
                         </thead>
                         <tbody>`;
 
-            // Datenzeilen der Matrix
             data.a.matrix.forEach(row => {
                 matrixHtml += `<tr class="border-b hover:bg-gray-50">
                     <td class="p-2 border font-bold text-center bg-gray-100">${row.year}</td>
@@ -284,7 +302,6 @@
                 </tr>`;
             });
 
-            // Durchschnitts-Fußzeile
             matrixHtml += `<tr class="bg-gray-200 font-bold">
                 <td class="p-2 border text-center">${t.tblAvg}</td>
                 <td class="p-2 border">${data.a.avgYearlyRain}</td>
@@ -293,7 +310,6 @@
 
             matrixHtml += `</tbody></table></div>`;
 
-            // Beide Tabellen in den Container laden
             container.innerHTML = html + matrixHtml;
         }
 
