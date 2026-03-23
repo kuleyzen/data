@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuleyzen Data | Strategic Analytics</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { kuleyzen: { green: '#0b3d0b', light: '#f4f4f4' } },
+                    fontFamily: { sans: ['Inter', 'Arial', 'sans-serif'] }
+                }
+            }
+        }
+
+        const translations = {
+            tr: {
+                title: "Kuleyzen Data",
+                subtitle: "Proje Yönetimi & Outsourcing – Yerel değerlere bağlı, küresel standartlarla yönetilen.",
+                navFarm: "Kuleyzen Çiftliği",
+                navConsulting: "Danışmanlık",
+                navData: "Veri Uygulaması",
+                panelTitle: "ANALİZ PANELİ",
+                startLabel: "BAŞLANGIÇ TARİHİ",
+                endLabel: "BİTİŞ TARİHİ",
+                paramTitle: "VERİ PARAMETRELERİ",
+                paramRain: "Yağış (Precipitation)",
+                paramTemp: "Sıcaklık (Temperature)",
+                paramSun: "Güneşlenme (Insolation)",
+                paramWind: "Rüzgar Hızı (Wind Speed)",
+                compareLabel: "Karşılaştırma Modu",
+                locA: "Lokasyon A",
+                locB: "Lokasyon B",
+                notSelected: "---",
+                btnAction: "VERİLERİ GETİR",
+                previewTitle: "VERİ ÖNİZLEME",
+                btnPdf: "PDF OLARAK İNDİR",
+                mapHint: "Harita üzerinde analiz edilecek noktayı seçin",
+                alertSelect: "Lütfen harita üzerinden bir yer seçin.",
+                footer: "Kuleyzen Data © 2026 – Altınözü, Türkiye"
+            },
+            en: {
+                title: "Kuleyzen Data",
+                subtitle: "Project Management & Outsourcing – rooted in local values, driven by global standards.",
+                navFarm: "Kuleyzen Çiftliği",
+                navConsulting: "Consulting",
+                navData: "Data App",
+                panelTitle: "ANALYSIS PANEL",
+                startLabel: "START DATE",
+                endLabel: "END DATE",
+                paramTitle: "DATA PARAMETERS",
+                paramRain: "Precipitation",
+                paramTemp: "Temperature",
+                paramSun: "Insolation",
+                paramWind: "Wind Speed",
+                compareLabel: "Comparison Mode",
+                locA: "Location A",
+                locB: "Location B",
+                notSelected: "---",
+                btnAction: "FETCH DATA",
+                previewTitle: "DATA PREVIEW",
+                btnPdf: "DOWNLOAD AS PDF",
+                mapHint: "Select a point on the map to analyze",
+                alertSelect: "Please select a location on the map.",
+                footer: "Kuleyzen Data © 2026 – Altınözü, Turkey"
+            },
+            de: {
+                title: "Kuleyzen Data",
+                subtitle: "Projektmanagement & Outsourcing – lokal verwurzelt, nach globalen Standards geführt.",
+                navFarm: "Kuleyzen Çiftliği",
+                navConsulting: "Beratung",
+                navData: "Daten-App",
+                panelTitle: "ANALYSE-PANEL",
+                startLabel: "STARTDATUM",
+                endLabel: "ENDDATUM",
+                paramTitle: "DATEN-PARAMETER",
+                paramRain: "Niederschlag",
+                paramTemp: "Temperatur",
+                paramSun: "Sonneneinstrahlung",
+                paramWind: "Windgeschwindigkeit",
+                compareLabel: "Vergleichsmodus",
+                locA: "Standort A",
+                locB: "Standort B",
+                notSelected: "---",
+                btnAction: "DATEN LADEN",
+                previewTitle: "DATEN-VORSCHAU",
+                btnPdf: "ALS PDF HERUNTERLADEN",
+                mapHint: "Wählen Sie einen Punkt auf der Karte aus",
+                alertSelect: "Bitte wählen Sie einen Standort auf der Karte.",
+                footer: "Kuleyzen Data © 2026 – Altınözü, Türkei"
+            }
+        };
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                el.innerText = t[key];
+            });
+            window.currentLang = lang;
+        }
+    </script>
+
+    <style>
+        .header-bg { background-color: #0b3d0b; }
+        .nav-bg { background-color: #f4f4f4; }
+        #map { height: 500px; border: 1px solid #ddd; z-index: 1; }
+        .btn-kuleyzen { background-color: #0b3d0b; color: white; transition: all 0.3s; }
+        .btn-kuleyzen:hover { background-color: #155a15; }
+        .marker-b { filter: hue-rotate(140deg); }
+        .lang-btn { cursor: pointer; padding: 2px 8px; font-size: 11px; font-weight: bold; color: white; opacity: 0.7; }
+        .lang-btn:hover { opacity: 1; border-bottom: 1px solid white; }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-white" onload="setLanguage('tr')">
+
+    <header class="header-bg text-white py-12 px-6 text-center relative">
+        <div class="absolute top-6 right-6">
+            <img src="logo.png" alt="Kuleyzen Logo" class="h-14 w-auto">
+        </div>
+        <div class="absolute top-24 right-6 flex space-x-3 bg-black/10 p-1 px-2 rounded">
+            <span class="lang-btn" onclick="setLanguage('tr')">TR</span>
+            <span class="lang-btn" onclick="setLanguage('de')">DE</span>
+            <span class="lang-btn" onclick="setLanguage('en')">EN</span>
+        </div>
+        <h1 class="text-3xl font-bold mb-2 uppercase tracking-widest" data-i18n="title">Kuleyzen Data</h1>
+        <p class="text-sm opacity-90 italic font-light" data-i18n="subtitle">Project Management & Outsourcing</p>
+    </header>
+
+    <nav class="nav-bg py-3 text-center border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div class="flex justify-center space-x-10 text-[13px] uppercase tracking-widest font-bold">
+            <a href="https://kuleyzen.com" class="text-kuleyzen-green hover:opacity-60 transition" data-i18n="navFarm">Kuleyzen Çiftliği</a>
+            <a href="https://consulting.kuleyzen.com" class="text-kuleyzen-green hover:opacity-60 transition" data-i18n="navConsulting">Danışmanlık</a>
+            <a href="#" class="text-kuleyzen-green border-b-2 border-kuleyzen-green pb-1" data-i18n="navData">Veri Uygulaması</a>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-12 px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-4 space-y-6">
+                <div class="bg-white p-6 border border-gray-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-kuleyzen-green mb-6 border-b pb-2 tracking-widest uppercase" data-i18n="panelTitle">ANALİZ PANELİ</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" data-i18n="startLabel">BAŞLANGIÇ TARİHİ</label>
+                            <input type="date" id="startDate" value="1981-01-01" class="w-full mt-1 p-2 border-b border-gray-300 outline-none focus:border-kuleyzen-green">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest" data-i18n="endLabel">BİTİŞ TARİHİ</label>
+                            <input type="date" id="endDate" class="w-full mt-1 p-2 border-b border-gray-300 outline-none focus:border-kuleyzen-green">
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100">
+                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block" data-i18n="paramTitle">VERİ PARAMETRELERİ</label>
+                            <div class="space-y-2 text-sm">
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="pRain" checked class="text-kuleyzen-green"><span data-i18n="paramRain">Yağış</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="pTemp" checked class="text-kuleyzen-green"><span data-i18n="paramTemp">Sıcaklık</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="pSun" checked class="text-kuleyzen-green"><span data-i18n="paramSun">Güneşlenme</span></label>
+                                <label class="flex items-center space-x-2"><input type="checkbox" id="pWind" class="text-kuleyzen-green"><span data-i18n="paramWind">Rüzgar</span></label>
+                            </div>
+                        </div>
+
+                        <div class="py-2 border-t border-gray-100">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" id="compareMode" class="w-4 h-4 text-kuleyzen-green border-gray-300">
+                                <span class="ml-3 text-sm font-bold text-gray-700" data-i18n="compareLabel">Karşılaştırma Modu</span>
+                            </label>
+                        </div>
+
+                        <button onclick="startAnalysis()" id="btnAction" class="w-full btn-kuleyzen py-4 font-bold text-xs uppercase tracking-widest shadow-md" data-i18n="btnAction">
+                            VERİLERİ GETİR
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8">
+                <div id="map" class="shadow-sm"></div>
+            </div>
+        </div>
+
+        <div id="previewSection" class="mt-12 hidden">
+            <div class="bg-white border border-gray-200 shadow-sm p-8">
+                <div class="flex justify-between items-center border-b-2 border-kuleyzen-green pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-kuleyzen-green uppercase tracking-widest" data-i18n="previewTitle">VERİ ÖNİZLEME</h2>
+                    <button onclick="generatePDF()" class="btn-kuleyzen px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                        <span data-i18n="btnPdf">PDF İNDİR</span>
+                    </button>
+                </div>
+                <div id="previewTableContainer" class="overflow-x-auto"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-100 py-10 text-center border-t border-gray-200 mt-10">
+        <p class="text-xs text-gray-600" data-i18n="footer">Kuleyzen Data © 2026 – Altınözü, Türkiye</p>
+    </footer>
+
+    <script>
+        document.getElementById('endDate').valueAsDate = new Date();
+        const map = L.map('map').setView([39.0, 35.0], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        let markerA, markerB, coordsA, coordsB;
+        let isCompare = false;
+
+        document.getElementById('compareMode').onchange = (e) => {
+            isCompare = e.target.checked;
+            if (!isCompare && markerB) { map.removeLayer(markerB); markerB = null; coordsB = null; }
+        };
+
+        map.on('click', (e) => {
+            if (!isCompare || !markerA) {
+                if (markerA) map.removeLayer(markerA);
+                markerA = L.marker(e.latlng).addTo(map);
+                coordsA = e.latlng;
+            } else {
+                if (markerB) map.removeLayer(markerB);
+                markerB = L.marker(e.latlng).addTo(map);
+                markerB._icon.classList.add('marker-b');
+                coordsB = e.latlng;
+            }
+        });
+
+        async function startAnalysis() {
+            if (!coordsA) return alert(translations[window.currentLang || 'tr'].alertSelect);
+            
+            const btn = document.getElementById('btnAction');
+            btn.innerText = "LOADING...";
+            btn.disabled = true;
+
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsxpvUvDyxq3yMQz1tPnBNTM3uqTMFDydwJ_SQ5UdWd5U6Hq2_2iHDWje2Q2V95dSvLg/exec';
+            
+            const payload = {
+                lang: window.currentLang || 'tr',
+                start: document.getElementById('startDate').value,
+                end: document.getElementById('endDate').value,
+                latA: coordsA.lat, lonA: coordsA.lng,
+                isCompare: isCompare,
+                latB: isCompare ? coordsB.lat : null,
+                lonB: isCompare ? coordsB.lng : null,
+                params: {
+                    rain: document.getElementById('pRain').checked,
+                    temp: document.getElementById('pTemp').checked,
+                    sun: document.getElementById('pSun').checked,
+                    wind: document.getElementById('pWind').checked
+                }
+            };
+
+            try {
+                // Hinweis: Im echten Einsatz auf GitHub ohne 'no-cors' für Daten-Rückgabe
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    renderTable(result.data);
+                    document.getElementById('previewSection').classList.remove('hidden');
+                    document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch(e) {
+                alert("Veri alınamadı. Lütfen backend'in aktif olduğunu ve GitHub üzerinden eriştiğinizi onaylayın.");
+            } finally {
+                btn.innerText = translations[window.currentLang || 'tr'].btnAction;
+                btn.disabled = false;
+            }
+        }
+
+        function renderTable(data) {
+            const container = document.getElementById('previewTableContainer');
+            let html = `<table class="w-full text-left text-sm">
+                <thead><tr class="bg-gray-50 border-b">
+                    <th class="p-4">Parameter</th><th class="p-4">Lokasyon A</th>
+                    ${data.isCompare ? '<th class="p-4">Lokasyon B</th>' : ''}
+                </tr></thead><tbody>`;
+            
+            if(data.a.rain) html += `<tr class="border-b"><td class="p-4">Total Rain (mm)</td><td class="p-4 font-bold">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.rain}</td>` : ''}</tr>`;
+            if(data.a.tempAvg) html += `<tr class="border-b"><td class="p-4">Avg Temp (°C)</td><td class="p-4 font-bold">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.tempAvg}</td>` : ''}</tr>`;
+            if(data.a.sun) html += `<tr class="border-b"><td class="p-4">Avg Insolation (kWh)</td><td class="p-4 font-bold">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.sun}</td>` : ''}</tr>`;
+            if(data.a.wind) html += `<tr class="border-b"><td class="p-4">Wind Speed (m/s)</td><td class="p-4 font-bold">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.wind}</td>` : ''}</tr>`;
+            
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        function generatePDF() {
+            alert("Backend PDF fonksiyonu tetikleniyor. Lütfen bekleyin...");
+            // Hier rufen wir später die PDF-Erstellung auf
+        }
+    </script>
+</body>
+</html>
