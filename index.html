@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuleyzen Data | Strategic Analytics</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -43,8 +44,8 @@
             },
             en: {
                 title: "Kuleyzen Data",
-                subtitle: "Project Management & Outsourcing – rooted in local values.",
-                navFarm: "Kuleyzen Çiftliği",
+                subtitle: "Project Management & Outsourcing – Global Standards.",
+                navFarm: "Kuleyzen Farm",
                 navConsulting: "Consulting",
                 navData: "Data App",
                 panelTitle: "ANALYSIS PANEL",
@@ -64,7 +65,7 @@
             },
             de: {
                 title: "Kuleyzen Data",
-                subtitle: "Projektmanagement & Outsourcing – lokal verwurzelt.",
+                subtitle: "Projektmanagement & Outsourcing – Lokale Werte.",
                 navFarm: "Kuleyzen Çiftliği",
                 navConsulting: "Beratung",
                 navData: "Daten-App",
@@ -100,8 +101,10 @@
         #map { height: 500px; border: 1px solid #ddd; z-index: 1; }
         .btn-kuleyzen { background-color: #0b3d0b; color: white; transition: all 0.3s; }
         .btn-kuleyzen:hover { background-color: #155a15; }
+        .btn-kuleyzen:disabled { background-color: #4b634b; cursor: not-allowed; }
         .marker-b { filter: hue-rotate(140deg); }
-        .lang-btn { cursor: pointer; padding: 2px 8px; font-size: 11px; font-weight: bold; color: white; }
+        .lang-btn { cursor: pointer; padding: 2px 8px; font-size: 11px; font-weight: bold; color: white; opacity: 0.8; }
+        .lang-btn:hover { opacity: 1; text-decoration: underline; }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-white" onload="setLanguage('tr')">
@@ -119,60 +122,74 @@
 
     <nav class="bg-gray-100 py-3 text-center border-b sticky top-0 z-50">
         <div class="flex justify-center space-x-8 text-xs font-bold uppercase tracking-widest">
-            <a href="https://kuleyzen.com" class="text-kuleyzen-green" data-i18n="navFarm">Kuleyzen Çiftliği</a>
-            <a href="https://consulting.kuleyzen.com" class="text-kuleyzen-green" data-i18n="navConsulting">Danışmanlık</a>
-            <a href="#" class="text-kuleyzen-green border-b-2 border-kuleyzen-green" data-i18n="navData">Veri Uygulaması</a>
+            <a href="https://kuleyzen.com" class="text-kuleyzen-green hover:opacity-70" data-i18n="navFarm">Kuleyzen Çiftliği</a>
+            <a href="https://consulting.kuleyzen.com" class="text-kuleyzen-green hover:opacity-70" data-i18n="navConsulting">Danışmanlık</a>
+            <a href="#" class="text-kuleyzen-green border-b-2 border-kuleyzen-green pb-1" data-i18n="navData">Veri Uygulaması</a>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto py-10 px-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-4 space-y-6">
-                <div class="bg-white p-6 border shadow-sm">
-                    <h2 class="text-md font-bold text-kuleyzen-green border-b pb-2 mb-4 uppercase" data-i18n="panelTitle">Analiz Paneli</h2>
+                <div class="bg-white p-6 border shadow-sm rounded-sm">
+                    <h2 class="text-md font-bold text-kuleyzen-green border-b pb-2 mb-4 uppercase tracking-wider" data-i18n="panelTitle">Analiz Paneli</h2>
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="startLabel">Başlangıç</label>
-                            <input type="date" id="startDate" value="1981-01-01" class="w-full border-b p-1 outline-none">
+                            <input type="date" id="startDate" value="1981-01-01" class="w-full border-b p-1 outline-none focus:border-kuleyzen-green">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="endLabel">Bitiş</label>
-                            <input type="date" id="endDate" class="w-full border-b p-1 outline-none">
+                            <input type="date" id="endDate" class="w-full border-b p-1 outline-none focus:border-kuleyzen-green">
                         </div>
                         <div class="pt-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block" data-i18n="paramTitle">Parametreler</label>
                             <div class="grid grid-cols-2 gap-2 text-xs">
-                                <label><input type="checkbox" id="pRain" checked> <span data-i18n="paramRain">Yağış</span></label>
-                                <label><input type="checkbox" id="pTemp" checked> <span data-i18n="paramTemp">Sıcaklık</span></label>
-                                <label><input type="checkbox" id="pSun" checked> <span data-i18n="paramSun">Güneş</span></label>
-                                <label><input type="checkbox" id="pWind"> <span data-i18n="paramWind">Rüzgar</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pRain" checked class="mr-2"> <span data-i18n="paramRain">Yağış</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pTemp" checked class="mr-2"> <span data-i18n="paramTemp">Sıcaklık</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pSun" checked class="mr-2"> <span data-i18n="paramSun">Güneş</span></label>
+                                <label class="flex items-center"><input type="checkbox" id="pWind" class="mr-2"> <span data-i18n="paramWind">Rüzgar</span></label>
                             </div>
                         </div>
                         <div class="py-2 border-t">
-                            <label class="flex items-center text-xs cursor-pointer">
-                                <input type="checkbox" id="compareMode" class="mr-2"> <span data-i18n="compareLabel">Karşılaştırma Modu</span>
+                            <label class="flex items-center text-xs cursor-pointer group">
+                                <input type="checkbox" id="compareMode" class="mr-2"> <span class="group-hover:text-kuleyzen-green" data-i18n="compareLabel">Karşılaştırma Modu</span>
                             </label>
                         </div>
-                        <button onclick="startAnalysis()" id="btnAction" class="w-full btn-kuleyzen py-3 font-bold text-xs uppercase tracking-widest" data-i18n="btnAction">VERİLERİ ANALİZ ET</button>
+                        <button onclick="startAnalysis()" id="btnAction" class="w-full btn-kuleyzen py-4 font-bold text-xs uppercase tracking-widest shadow-md" data-i18n="btnAction">VERİLERİ ANALİZ ET</button>
                     </div>
                 </div>
             </div>
-            <div class="lg:col-span-8"><div id="map"></div></div>
+
+            <div class="lg:col-span-8">
+                <div id="map" class="shadow-sm rounded-sm"></div>
+            </div>
         </div>
 
-        <div id="previewSection" class="mt-10 hidden bg-white border shadow-sm p-8">
-            <div class="flex justify-between items-center border-b-2 border-kuleyzen-green pb-4 mb-6">
+        <div id="previewSection" class="mt-10 hidden bg-white border shadow-sm p-8 rounded-sm">
+            <div class="flex flex-col md:flex-row justify-between items-center border-b-2 border-kuleyzen-green pb-4 mb-6">
                 <h2 class="text-xl font-bold text-kuleyzen-green uppercase tracking-widest" data-i18n="previewTitle">VERİ ÖNİZLEME</h2>
-                <button onclick="generatePDF()" id="btnPdf" class="btn-kuleyzen px-6 py-2 text-[10px] font-bold uppercase tracking-widest" data-i18n="btnPdf">PDF İNDİR</button>
+                <button onclick="generatePDF()" id="btnPdf" class="mt-4 md:mt-0 btn-kuleyzen px-8 py-3 text-[10px] font-bold uppercase tracking-widest shadow-md">
+                    <span data-i18n="btnPdf">PDF İNDİR</span>
+                </button>
             </div>
-            <div id="previewTableContainer" class="overflow-x-auto"></div>
+            <div id="previewTableContainer" class="overflow-x-auto text-gray-700"></div>
         </div>
     </main>
 
+    <footer class="bg-gray-100 py-12 text-center border-t mt-12">
+        <p class="text-[11px] text-gray-500 tracking-[0.2em] uppercase" data-i18n="footer">Kuleyzen Data © 2026 – Altınözü, Türkiye</p>
+    </footer>
+
     <script>
+        // Setze Enddatum auf heute
         document.getElementById('endDate').valueAsDate = new Date();
+        
+        // Karte initialisieren
         const map = L.map('map').setView([39.0, 35.0], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
 
         let markerA, markerB, coordsA, coordsB;
         let isCompare = false;
@@ -195,14 +212,20 @@
             }
         });
 
+        // --- DIE NEUE SCRIPT URL ---
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxT_Uan3VXPw9K0Geclz6LeZsn1NJgB0l2eherjKkPl_qpm2NbLQ7v86N8YVdSu4zDh8Q/exec';
+
         async function startAnalysis() {
-            if (!coordsA) return alert(translations[window.currentLang || 'tr'].alertSelect);
+            if (!coordsA) {
+                alert(translations[window.currentLang || 'tr'].alertSelect);
+                return;
+            }
+
             const btn = document.getElementById('btnAction');
-            btn.innerText = "LOADING...";
+            const originalText = btn.innerText;
+            btn.innerText = "NASA VERİLERİ YÜKLENİYOR...";
             btn.disabled = true;
 
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxT_Uan3VXPw9K0Geclz6LeZsn1NJgB0l2eherjKkPl_qpm2NbLQ7v86N8YVdSu4zDh8Q/exec';
-            
             const payload = {
                 action: "getData",
                 lang: window.currentLang || 'tr',
@@ -221,46 +244,82 @@
             };
 
             try {
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) 
+                });
+                
                 const result = await response.json();
+                
                 if(result.status === "success") {
                     window.lastReportData = result.data;
                     renderTable(result.data);
                     document.getElementById('previewSection').classList.remove('hidden');
                     document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert("Backend hat einen Fehler gemeldet: " + result.message);
                 }
-            } catch(e) { alert("Error connecting to Backend."); }
-            finally { btn.innerText = translations[window.currentLang || 'tr'].btnAction; btn.disabled = false; }
+            } catch(e) { 
+                console.error(e);
+                alert("Bağlantı Hatası! Lütfen GitHub SSL sertifikasının tamamlanmasını bekleyin oder den Browser-Cache leeren."); 
+            } finally { 
+                btn.innerText = originalText; 
+                btn.disabled = false; 
+            }
         }
 
         function renderTable(data) {
             const container = document.getElementById('previewTableContainer');
-            let html = `<table class="w-full text-left text-sm border-collapse">
+            let html = `<table class="w-full text-left text-sm border-collapse bg-white border border-gray-100">
                 <thead><tr class="bg-gray-50 border-b">
-                    <th class="p-4 border-r">Parameter</th><th class="p-4 border-r">Lokasyon A</th>
-                    ${data.isCompare ? '<th class="p-4">Lokasyon B</th>' : ''}
+                    <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">Parametre</th>
+                    <th class="p-4 border-r font-bold text-kuleyzen-green uppercase tracking-tighter">Lokasyon A</th>
+                    ${data.isCompare ? `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">Lokasyon B</th>` : ''}
                 </tr></thead><tbody>`;
-            if(data.a.rain) html += `<tr class="border-b"><td class="p-4 border-r">Total Rain (mm)</td><td class="p-4 border-r font-bold">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.rain}</td>` : ''}</tr>`;
-            if(data.a.tempAvg) html += `<tr class="border-b"><td class="p-4 border-r">Avg Temp (°C)</td><td class="p-4 border-r font-bold">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.tempAvg}</td>` : ''}</tr>`;
-            if(data.a.sun) html += `<tr class="border-b"><td class="p-4 border-r">Insolation (kWh/m²)</td><td class="p-4 border-r font-bold">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.sun}</td>` : ''}</tr>`;
-            if(data.a.wind) html += `<tr class="border-b"><td class="p-4 border-r">Wind Speed (m/s)</td><td class="p-4 border-r font-bold">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 text-green-700 font-bold">${data.b.wind}</td>` : ''}</tr>`;
+            
+            if(data.a.rain) {
+                html += `<tr class="border-b"><td class="p-4 border-r font-medium">Toplam Yağış (mm)</td><td class="p-4 border-r font-bold">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.rain}</td>` : ''}</tr>`;
+            }
+            if(data.a.tempAvg) {
+                html += `<tr class="border-b"><td class="p-4 border-r font-medium">Ortalama Sıcaklık (°C)</td><td class="p-4 border-r font-bold">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.tempAvg}</td>` : ''}</tr>`;
+            }
+            if(data.a.sun) {
+                html += `<tr class="border-b"><td class="p-4 border-r font-medium">Güneşlenme (kWh/m²)</td><td class="p-4 border-r font-bold">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.sun}</td>` : ''}</tr>`;
+            }
+            if(data.a.wind) {
+                html += `<tr class="border-b"><td class="p-4 border-r font-medium">Rüzgar Hızı (m/s)</td><td class="p-4 border-r font-bold">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.wind}</td>` : ''}</tr>`;
+            }
+            
             html += `</tbody></table>`;
             container.innerHTML = html;
         }
 
         async function generatePDF() {
+            if (!window.lastReportData) return;
+            
             const btn = document.getElementById('btnPdf');
-            btn.innerText = "WAIT...";
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxT_Uan3VXPw9K0Geclz6LeZsn1NJgB0l2eherjKkPl_qpm2NbLQ7v86N8YVdSu4zDh8Q/exec';
+            const originalText = btn.innerText;
+            btn.innerText = "PDF HAZIRLANIYOR...";
+            btn.disabled = true;
+
             try {
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ action: "createPDF", data: window.lastReportData })
+                    body: JSON.stringify({ 
+                        action: "createPDF", 
+                        data: window.lastReportData 
+                    })
                 });
                 const result = await response.json();
-                if(result.url) window.open(result.url, '_blank');
-            } catch(e) { alert("PDF Error"); }
-            finally { btn.innerText = translations[window.currentLang || 'tr'].btnPdf; }
+                if(result.url) {
+                    window.open(result.url, '_blank');
+                }
+            } catch(e) { 
+                alert("PDF Hatası! Lütfen tekrar deneyin."); 
+            } finally { 
+                btn.innerText = originalText; 
+                btn.disabled = false; 
+            }
         }
     </script>
 </body>
