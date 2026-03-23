@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         tailwind.config = {
@@ -65,17 +66,11 @@
         function setLanguage(lang) {
             window.currentLang = lang;
             const t = translations[lang];
-            
-            // HTML Texte aktualisieren
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
                 if(t[key]) el.innerText = t[key];
             });
-
-            // Wenn die Tabelle schon offen ist, auch diese sofort übersetzen
-            if (window.lastReportData) {
-                renderTable(window.lastReportData);
-            }
+            if (window.lastReportData) renderTable(window.lastReportData);
         }
     </script>
 
@@ -90,14 +85,13 @@
         .lang-btn:hover { opacity: 1; background-color: rgba(255,255,255,0.2); border-radius: 4px; }
     </style>
 </head>
-<body class="font-sans text-gray-800 bg-white" onload="setLanguage('tr')">
+<body class="font-sans text-gray-800 bg-gray-50" onload="setLanguage('tr')">
 
     <header class="header-bg text-white pt-6 pb-12 px-6 relative shadow-md">
         <div class="max-w-7xl mx-auto">
             <div class="flex justify-end items-start mb-6 md:mb-10">
                 <div class="flex flex-col items-end space-y-4">
                     <img src="logo.png" alt="Logo" class="h-12 md:h-14 w-auto bg-white p-1 rounded shadow">
-                    
                     <div class="flex space-x-1 bg-black/20 p-1 rounded">
                         <span class="lang-btn" onclick="setLanguage('tr')">TR</span>
                         <span class="lang-btn" onclick="setLanguage('de')">DE</span>
@@ -105,7 +99,6 @@
                     </div>
                 </div>
             </div>
-            
             <div class="text-center">
                 <h1 class="text-3xl md:text-5xl font-bold tracking-widest uppercase drop-shadow-md" data-i18n="title">Kuleyzen Data</h1>
                 <p class="text-xs md:text-sm mt-4 italic opacity-90 max-w-xl mx-auto leading-relaxed" data-i18n="subtitle">Proje Yönetimi & Outsourcing – Yerel değerlere bağlı, küresel standartlarla yönetilen.</p>
@@ -113,7 +106,7 @@
         </div>
     </header>
 
-    <nav class="bg-gray-100 py-3 px-2 text-center border-b sticky top-0 z-50 shadow-sm">
+    <nav class="bg-white py-3 px-2 text-center border-b sticky top-0 z-50 shadow-sm">
         <div class="flex justify-center space-x-4 md:space-x-8 text-[10px] md:text-xs font-bold uppercase tracking-widest">
             <a href="https://kuleyzen.com" class="text-kuleyzen-green hover:opacity-70" data-i18n="navFarm">Kuleyzen Çiftliği</a>
             <a href="https://consulting.kuleyzen.com" class="text-kuleyzen-green hover:opacity-70" data-i18n="navConsulting">Danışmanlık</a>
@@ -133,7 +126,7 @@
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="endLabel">Bitiş</label>
-                            <input type="date" id="endDate" value="2022-03-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
+                            <input type="date" id="endDate" value="2022-12-31" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div class="pt-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block" data-i18n="paramTitle">Parametreler</label>
@@ -166,7 +159,13 @@
                     <span data-i18n="btnPdf">PDF İNDİR</span>
                 </button>
             </div>
-            <div id="previewTableContainer" class="overflow-x-auto text-gray-700"></div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div id="previewTableContainer" class="overflow-x-auto text-gray-700"></div>
+                <div class="border p-4 bg-gray-50 flex items-center justify-center">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -176,12 +175,11 @@
 
     <script>
         const map = L.map('map').setView([39.0, 35.0], 6);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
 
         let markerA, markerB, coordsA, coordsB;
         let isCompare = false;
+        let myChart = null; // Variable für das Diagramm
 
         document.getElementById('compareMode').onchange = (e) => {
             isCompare = e.target.checked;
@@ -201,16 +199,15 @@
             }
         });
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw-lg1_IGR1PqYD6n6EBpNLN-WAKXM_CqUztkORKzanLxyhIK395a9-CCQx8RXSkUbV_w/exec';
+        // WICHTIG: Deine aktuelle und korrekte URL!
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNqPTI9D-crbUOauxhc-dxJ1e7RCwwhbjvJZrf5PhL8lfTDE2KrCC3RjUQYtmA2Xb1/exec';
 
         async function startAnalysis() {
             const t = translations[window.currentLang || 'tr'];
-            if (!coordsA) {
-                alert(t.alertSelect);
-                return;
-            }
+            if (!coordsA) return alert(t.alertSelect);
 
             const btn = document.getElementById('btnAction');
+            const originalText = btn.innerText;
             btn.innerText = t.loadingData;
             btn.disabled = true;
 
@@ -224,36 +221,24 @@
                 latB: isCompare ? coordsB.lat : null,
                 lonB: isCompare ? coordsB.lng : null,
                 params: {
-                    rain: document.getElementById('pRain').checked,
-                    temp: document.getElementById('pTemp').checked,
-                    sun: document.getElementById('pSun').checked,
-                    wind: document.getElementById('pWind').checked
+                    rain: document.getElementById('pRain').checked, temp: document.getElementById('pTemp').checked,
+                    sun: document.getElementById('pSun').checked, wind: document.getElementById('pWind').checked
                 }
             };
 
             try {
-                const response = await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload) 
-                });
-                
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const result = await response.json();
                 
                 if(result.status === "success") {
                     window.lastReportData = result.data;
                     renderTable(result.data);
+                    renderChart(result.data); // Das Diagramm zeichnen
                     document.getElementById('previewSection').classList.remove('hidden');
                     document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    alert("Backend Error: " + result.message);
-                }
-            } catch(e) { 
-                console.error(e);
-                alert(t.errorConn); 
-            } finally { 
-                btn.innerText = t.btnAction; 
-                btn.disabled = false; 
-            }
+                } else { alert("Backend Error: " + result.message); }
+            } catch(e) { console.error(e); alert(t.errorConn); } 
+            finally { btn.innerText = t.btnAction; btn.disabled = false; }
         }
 
         function renderTable(data) {
@@ -261,27 +246,61 @@
             const container = document.getElementById('previewTableContainer');
             
             let html = `<table class="w-full text-left text-sm border-collapse bg-white border border-gray-100">
-                <thead><tr class="bg-gray-50 border-b">
+                <thead><tr class="bg-gray-100 border-b">
                     <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">${t.tblParam}</th>
                     <th class="p-4 border-r font-bold text-kuleyzen-green uppercase tracking-tighter">${t.tblLocA}</th>
                     ${data.isCompare ? `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">${t.tblLocB}</th>` : ''}
                 </tr></thead><tbody>`;
             
-            if(data.a.rain) {
-                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.rain}</td>` : ''}</tr>`;
-            }
-            if(data.a.tempAvg) {
-                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.tempAvg}</td>` : ''}</tr>`;
-            }
-            if(data.a.sun) {
-                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.sun}</td>` : ''}</tr>`;
-            }
-            if(data.a.wind) {
-                html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-green-700">${data.b.wind}</td>` : ''}</tr>`;
-            }
+            if(data.a.rain) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold text-blue-600">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-blue-800">${data.b.rain}</td>` : ''}</tr>`;
+            if(data.a.tempAvg) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold text-red-500">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-red-700">${data.b.tempAvg}</td>` : ''}</tr>`;
+            if(data.a.sun) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold text-yellow-500">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-yellow-600">${data.b.sun}</td>` : ''}</tr>`;
+            if(data.a.wind) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold text-gray-500">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-gray-700">${data.b.wind}</td>` : ''}</tr>`;
             
             html += `</tbody></table>`;
             container.innerHTML = html;
+        }
+
+        // Neue Funktion für das interaktive Diagramm
+        function renderChart(data) {
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            if (myChart) myChart.destroy(); // Altes Diagramm löschen, falls vorhanden
+
+            const labels = data.a.monthly.map(m => m.month);
+            const rainData = data.a.monthly.map(m => m.rain);
+            const tempData = data.a.monthly.map(m => m.temp);
+
+            myChart = new Chart(ctx, {
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: 'Yağış / Rain (mm)',
+                            data: rainData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)', // Blau
+                            yAxisID: 'y'
+                        },
+                        {
+                            type: 'line',
+                            label: 'Sıcaklık / Temp (°C)',
+                            data: tempData,
+                            borderColor: 'rgba(239, 68, 68, 1)', // Rot
+                            borderWidth: 2,
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: {
+                        y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'mm' } },
+                        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: '°C' } }
+                    }
+                }
+            });
         }
 
         async function generatePDF() {
@@ -293,23 +312,11 @@
             btn.disabled = true;
 
             try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        action: "createPDF", 
-                        data: window.lastReportData 
-                    })
-                });
+                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "createPDF", data: window.lastReportData }) });
                 const result = await response.json();
-                if(result.url) {
-                    window.open(result.url, '_blank');
-                }
-            } catch(e) { 
-                alert(t.errorPdf); 
-            } finally { 
-                btn.innerText = t.btnPdf; 
-                btn.disabled = false; 
-            }
+                if(result.url) window.open(result.url, '_blank');
+            } catch(e) { alert(t.errorPdf); } 
+            finally { btn.innerText = t.btnPdf; btn.disabled = false; }
         }
     </script>
 </body>
