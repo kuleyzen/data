@@ -33,7 +33,8 @@
                 loadingData: "NASA VERİLERİ YÜKLENİYOR...", loadingPdf: "PDF HAZIRLANIYOR...", 
                 errorPdf: "PDF Hatası! Lütfen tekrar deneyin.", errorConn: "Bağlantı Hatası! Lütfen sayfayı yenileyin.",
                 tblParam: "Parametre", tblLocA: "Lokasyon A", tblLocB: "Lokasyon B",
-                tblRain: "Toplam Yağış (mm)", tblTemp: "Ortalama Sıcaklık (°C)", tblSun: "Güneşlenme (kWh/m²)", tblWind: "Rüzgar Hızı (m/s)"
+                tblRain: "Toplam Yağış (mm)", tblTemp: "Ortalama Sıcaklık (°C)", tblSun: "Güneşlenme (kWh/m²)", tblWind: "Rüzgar Hızı (m/s)",
+                tblMatrixTitle: "AYLIK KARŞILAŞTIRMA TABLOSU (Yağış / mm)", tblAvg: "ORTALAMA", tblYear: "Yıl", tblTotal: "Toplam"
             },
             en: {
                 title: "Kuleyzen Data", subtitle: "Project Management & Outsourcing – Global Standards.",
@@ -46,7 +47,8 @@
                 loadingData: "LOADING NASA DATA...", loadingPdf: "PREPARING PDF...", 
                 errorPdf: "PDF Error! Please try again.", errorConn: "Connection Error! Please refresh the page.",
                 tblParam: "Parameter", tblLocA: "Location A", tblLocB: "Location B",
-                tblRain: "Total Rain (mm)", tblTemp: "Avg. Temperature (°C)", tblSun: "Insolation (kWh/m²)", tblWind: "Wind Speed (m/s)"
+                tblRain: "Total Rain (mm)", tblTemp: "Avg. Temperature (°C)", tblSun: "Insolation (kWh/m²)", tblWind: "Wind Speed (m/s)",
+                tblMatrixTitle: "MONTHLY COMPARISON TABLE (Rain / mm)", tblAvg: "AVERAGE", tblYear: "Year", tblTotal: "Total"
             },
             de: {
                 title: "Kuleyzen Data", subtitle: "Projektmanagement & Outsourcing – Lokale Werte.",
@@ -59,8 +61,15 @@
                 loadingData: "NASA DATEN WERDEN GELADEN...", loadingPdf: "PDF WIRD ERSTELLT...", 
                 errorPdf: "PDF-Fehler! Bitte erneut versuchen.", errorConn: "Verbindungsfehler! Bitte Seite neu laden.",
                 tblParam: "Parameter", tblLocA: "Standort A", tblLocB: "Standort B",
-                tblRain: "Niederschlag (mm)", tblTemp: "Ø Temperatur (°C)", tblSun: "Sonneneinstrahlung (kWh/m²)", tblWind: "Windgeschwindigkeit (m/s)"
+                tblRain: "Niederschlag (mm)", tblTemp: "Ø Temperatur (°C)", tblSun: "Sonneneinstrahlung (kWh/m²)", tblWind: "Windgeschwindigkeit (m/s)",
+                tblMatrixTitle: "MONATLICHE VERGLEICHSTABELLE (Niederschlag / mm)", tblAvg: "DURCHSCHNITT", tblYear: "Jahr", tblTotal: "Gesamt"
             }
+        };
+
+        const monthNames = {
+            tr: ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
+            en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            de: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"]
         };
 
         function setLanguage(lang) {
@@ -122,11 +131,11 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="startLabel">Başlangıç</label>
-                            <input type="date" id="startDate" value="2022-01-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
+                            <input type="date" id="startDate" value="1981-01-01" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div>
                             <label class="text-[10px] font-bold text-gray-400 uppercase" data-i18n="endLabel">Bitiş</label>
-                            <input type="date" id="endDate" value="2022-12-31" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
+                            <input type="date" id="endDate" value="2026-03-23" class="w-full border-b p-2 outline-none focus:border-kuleyzen-green bg-gray-50">
                         </div>
                         <div class="pt-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block" data-i18n="paramTitle">Parametreler</label>
@@ -160,12 +169,7 @@
                 </button>
             </div>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div id="previewTableContainer" class="overflow-x-auto text-gray-700"></div>
-                <div class="border p-4 bg-gray-50 flex items-center justify-center">
-                    <canvas id="monthlyChart"></canvas>
-                </div>
-            </div>
+            <div id="previewTableContainer" class="overflow-x-auto text-gray-700 mb-10"></div>
         </div>
     </main>
 
@@ -179,7 +183,6 @@
 
         let markerA, markerB, coordsA, coordsB;
         let isCompare = false;
-        let myChart = null; // Variable für das Diagramm
 
         document.getElementById('compareMode').onchange = (e) => {
             isCompare = e.target.checked;
@@ -200,7 +203,7 @@
         });
 
         // WICHTIG: Deine aktuelle und korrekte URL!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNqPTI9D-crbUOauxhc-dxJ1e7RCwwhbjvJZrf5PhL8lfTDE2KrCC3RjUQYtmA2Xb1/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby5WQy_MFkejSoQaLR3iftjd_6QFbW2_48ORqRrQ2a1e3Cjl87vjFAqaahLCLDsVe7Pjw/exec';
 
         async function startAnalysis() {
             const t = translations[window.currentLang || 'tr'];
@@ -233,7 +236,6 @@
                 if(result.status === "success") {
                     window.lastReportData = result.data;
                     renderTable(result.data);
-                    renderChart(result.data); // Das Diagramm zeichnen
                     document.getElementById('previewSection').classList.remove('hidden');
                     document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
                 } else { alert("Backend Error: " + result.message); }
@@ -243,8 +245,10 @@
 
         function renderTable(data) {
             const t = translations[window.currentLang || 'tr'];
+            const mNames = monthNames[window.currentLang || 'tr'];
             const container = document.getElementById('previewTableContainer');
             
+            // 1. ZUSAMMENFASSUNGSTABELLE (Oben)
             let html = `<table class="w-full text-left text-sm border-collapse bg-white border border-gray-100">
                 <thead><tr class="bg-gray-100 border-b">
                     <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">${t.tblParam}</th>
@@ -252,55 +256,45 @@
                     ${data.isCompare ? `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">${t.tblLocB}</th>` : ''}
                 </tr></thead><tbody>`;
             
-            if(data.a.rain) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold text-blue-600">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-blue-800">${data.b.rain}</td>` : ''}</tr>`;
-            if(data.a.tempAvg) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold text-red-500">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-red-700">${data.b.tempAvg}</td>` : ''}</tr>`;
-            if(data.a.sun) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold text-yellow-500">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-yellow-600">${data.b.sun}</td>` : ''}</tr>`;
-            if(data.a.wind) html += `<tr class="border-b"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold text-gray-500">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-gray-700">${data.b.wind}</td>` : ''}</tr>`;
-            
+            if(data.a.rain) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold text-blue-600">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-blue-800">${data.b.rain}</td>` : ''}</tr>`;
+            if(data.a.tempAvg) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold text-red-500">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-red-700">${data.b.tempAvg}</td>` : ''}</tr>`;
+            if(data.a.sun) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold text-yellow-500">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-yellow-600">${data.b.sun}</td>` : ''}</tr>`;
+            if(data.a.wind) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold text-gray-500">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-gray-700">${data.b.wind}</td>` : ''}</tr>`;
             html += `</tbody></table>`;
-            container.innerHTML = html;
-        }
 
-        // Neue Funktion für das interaktive Diagramm
-        function renderChart(data) {
-            const ctx = document.getElementById('monthlyChart').getContext('2d');
-            if (myChart) myChart.destroy(); // Altes Diagramm löschen, falls vorhanden
+            // 2. MONATS-MATRIX (Unten)
+            let matrixHtml = `<h3 class="mt-12 text-md font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${t.tblMatrixTitle}</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-xs border-collapse border border-gray-200">
+                        <thead>
+                            <tr class="bg-kuleyzen-green text-white">
+                                <th class="p-2 border text-center">${t.tblYear}</th>
+                                <th class="p-2 border text-center">${t.tblTotal}</th>
+                                ${mNames.map(month => `<th class="p-2 border text-center">${month}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>`;
 
-            const labels = data.a.monthly.map(m => m.month);
-            const rainData = data.a.monthly.map(m => m.rain);
-            const tempData = data.a.monthly.map(m => m.temp);
-
-            myChart = new Chart(ctx, {
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            type: 'bar',
-                            label: 'Yağış / Rain (mm)',
-                            data: rainData,
-                            backgroundColor: 'rgba(59, 130, 246, 0.7)', // Blau
-                            yAxisID: 'y'
-                        },
-                        {
-                            type: 'line',
-                            label: 'Sıcaklık / Temp (°C)',
-                            data: tempData,
-                            borderColor: 'rgba(239, 68, 68, 1)', // Rot
-                            borderWidth: 2,
-                            tension: 0.3,
-                            yAxisID: 'y1'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    interaction: { mode: 'index', intersect: false },
-                    scales: {
-                        y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'mm' } },
-                        y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: '°C' } }
-                    }
-                }
+            // Datenzeilen der Matrix
+            data.a.matrix.forEach(row => {
+                matrixHtml += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-2 border font-bold text-center bg-gray-100">${row.year}</td>
+                    <td class="p-2 border font-bold bg-gray-50">${row.total}</td>
+                    ${row.months.map(val => `<td class="p-2 border">${val}</td>`).join('')}
+                </tr>`;
             });
+
+            // Durchschnitts-Fußzeile
+            matrixHtml += `<tr class="bg-gray-200 font-bold">
+                <td class="p-2 border text-center">${t.tblAvg}</td>
+                <td class="p-2 border">${data.a.avgYearlyRain}</td>
+                ${data.a.bottomAverages.map(val => `<td class="p-2 border text-blue-700">${val}</td>`).join('')}
+            </tr>`;
+
+            matrixHtml += `</tbody></table></div>`;
+
+            // Beide Tabellen in den Container laden
+            container.innerHTML = html + matrixHtml;
         }
 
         async function generatePDF() {
