@@ -33,7 +33,9 @@
                 errorPdf: "PDF Hatası! Lütfen tekrar deneyin.", errorConn: "Bağlantı Hatası! Lütfen sayfayı yenileyin.",
                 tblParam: "Parametre", tblLocA: "Lokasyon A", tblLocB: "Lokasyon B",
                 tblRain: "Toplam Yağış (mm)", tblTemp: "Ortalama Sıcaklık (°C)", tblSun: "Güneşlenme (kWh/m²)", tblWind: "Rüzgar Hızı (m/s)",
-                tblMatrixTitle: "AYLIK YAĞIŞ TABLOSU", tblAvg: "ORTALAMA", tblYear: "Yıl", tblTotal: "Toplam"
+                tblMatrixRain: "Aylık Yağış Tablosu (mm)", tblMatrixTemp: "Aylık Sıcaklık Tablosu (°C)", 
+                tblMatrixSun: "Aylık Güneşlenme Tablosu (kWh/m²)", tblMatrixWind: "Aylık Rüzgar Hızı Tablosu (m/s)",
+                tblAvg: "ORTALAMA", tblYear: "Yıl", tblTotalAvg: "Top/Ort"
             },
             en: {
                 title: "Kuleyzen Data", subtitle: "Project Management & Outsourcing – Global Standards.",
@@ -47,7 +49,9 @@
                 errorPdf: "PDF Error! Please try again.", errorConn: "Connection Error! Please refresh the page.",
                 tblParam: "Parameter", tblLocA: "Location A", tblLocB: "Location B",
                 tblRain: "Total Rain (mm)", tblTemp: "Avg. Temperature (°C)", tblSun: "Insolation (kWh/m²)", tblWind: "Wind Speed (m/s)",
-                tblMatrixTitle: "MONTHLY RAIN MATRIX", tblAvg: "AVERAGE", tblYear: "Year", tblTotal: "Total"
+                tblMatrixRain: "Monthly Rain Matrix (mm)", tblMatrixTemp: "Monthly Temp Matrix (°C)", 
+                tblMatrixSun: "Monthly Insolation Matrix (kWh/m²)", tblMatrixWind: "Monthly Wind Matrix (m/s)",
+                tblAvg: "AVERAGE", tblYear: "Year", tblTotalAvg: "Total/Avg"
             },
             de: {
                 title: "Kuleyzen Data", subtitle: "Projektmanagement & Outsourcing – Lokale Werte.",
@@ -61,7 +65,9 @@
                 errorPdf: "PDF-Fehler! Bitte erneut versuchen.", errorConn: "Verbindungsfehler! Bitte Seite neu laden.",
                 tblParam: "Parameter", tblLocA: "Standort A", tblLocB: "Standort B",
                 tblRain: "Niederschlag (mm)", tblTemp: "Ø Temperatur (°C)", tblSun: "Sonneneinstrahlung (kWh/m²)", tblWind: "Windgeschwindigkeit (m/s)",
-                tblMatrixTitle: "MONATLICHE NIEDERSCHLAGSMATRIX", tblAvg: "DURCHSCHNITT", tblYear: "Jahr", tblTotal: "Gesamt"
+                tblMatrixRain: "Monatl. Niederschlagsmatrix (mm)", tblMatrixTemp: "Monatl. Temperaturmatrix (°C)", 
+                tblMatrixSun: "Monatl. Sonneneinstrahlungsmatrix (kWh/m²)", tblMatrixWind: "Monatl. Windmatrix (m/s)",
+                tblAvg: "DURCHSCHNITT", tblYear: "Jahr", tblTotalAvg: "Gesamt/Ø"
             }
         };
 
@@ -201,9 +207,8 @@
             }
         });
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzSoVP28lhg06g5rPnzn_KdBYZn0pkegsnz50jZn7jnZq37IH4ZT2W-6L73iuF54WmCkg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxTxmtIc00xzmYxeaakD6Ri2WIboVB_3yey07h8aKKchoMBHbeKW7HEB6KFLV5Ywgf5IA/exec';
 
-        // Helfer-Funktion: Koordinaten in Ortsnamen umwandeln
         async function getPlaceName(lat, lon, lang) {
             try {
                 const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=${lang}`);
@@ -211,7 +216,7 @@
                 if (data && data.address) {
                     return data.address.city || data.address.town || data.address.village || data.address.county || data.address.province || "Bilinmeyen Konum";
                 }
-            } catch(e) { console.warn("Geocoding fehlgeschlagen", e); }
+            } catch(e) { console.warn("Geocoding failed", e); }
             return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
         }
 
@@ -224,7 +229,6 @@
             btn.innerText = t.loadingData;
             btn.disabled = true;
 
-            // Ortsnamen vor der Abfrage generieren
             const nameA = await getPlaceName(coordsA.lat, coordsA.lng, window.currentLang || 'tr');
             let nameB = null;
             if (isCompare && coordsB) {
@@ -237,8 +241,8 @@
                 start: document.getElementById('startDate').value,
                 end: document.getElementById('endDate').value,
                 latA: coordsA.lat, lonA: coordsA.lng,
-                nameA: nameA, // Neuer Parameter für das Backend
-                nameB: nameB, // Neuer Parameter für das Backend
+                nameA: nameA, 
+                nameB: nameB,
                 isCompare: isCompare,
                 latB: isCompare ? coordsB.lat : null,
                 lonB: isCompare ? coordsB.lng : null,
@@ -253,6 +257,7 @@
                 const result = await response.json();
                 
                 if(result.status === "success") {
+                    result.data.params = payload.params; 
                     window.lastReportData = result.data;
                     renderTable(result.data);
                     document.getElementById('previewSection').classList.remove('hidden');
@@ -262,12 +267,44 @@
             finally { btn.innerText = t.btnAction; btn.disabled = false; }
         }
 
+        function buildMatrixHtml(matrixData, title, locationName, t, mNames) {
+            if (!matrixData || !matrixData.rows || matrixData.rows.length === 0) return '';
+            let html = `<h3 class="mt-8 text-sm font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${title} (${locationName})</h3>
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-right text-xs border-collapse border border-gray-200">
+                        <thead>
+                            <tr class="bg-kuleyzen-green text-white">
+                                <th class="p-2 border text-center">${t.tblYear}</th>
+                                <th class="p-2 border text-center">${t.tblTotalAvg}</th>
+                                ${mNames.map(month => `<th class="p-2 border text-center">${month}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>`;
+
+            matrixData.rows.forEach(row => {
+                html += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-2 border font-bold text-center bg-gray-100">${row.year}</td>
+                    <td class="p-2 border font-bold bg-gray-50">${row.total}</td>
+                    ${row.months.map(val => `<td class="p-2 border">${val}</td>`).join('')}
+                </tr>`;
+            });
+
+            html += `<tr class="bg-gray-200 font-bold">
+                <td class="p-2 border text-center">${t.tblAvg}</td>
+                <td class="p-2 border">${matrixData.avgYearly}</td>
+                ${matrixData.bottomAverages.map(val => `<td class="p-2 border text-blue-700">${val}</td>`).join('')}
+            </tr>`;
+
+            html += `</tbody></table></div>`;
+            return html;
+        }
+
         function renderTable(data) {
             const t = translations[window.currentLang || 'tr'];
             const mNames = monthNames[window.currentLang || 'tr'];
             const container = document.getElementById('previewTableContainer');
             
-            // 1. ZUSAMMENFASSUNGSTABELLE (Oben)
+            // 1. ZUSAMMENFASSUNGSTABELLE
             let html = `<table class="w-full text-left text-sm border-collapse bg-white border border-gray-100">
                 <thead><tr class="bg-gray-100 border-b">
                     <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">${t.tblParam}</th>
@@ -281,35 +318,27 @@
             if(data.a.wind) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold text-gray-500">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-gray-700">${data.b.wind}</td>` : ''}</tr>`;
             html += `</tbody></table>`;
 
-            // 2. MONATS-MATRIX (Unten)
-            let matrixHtml = `<h3 class="mt-12 text-md font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${t.tblMatrixTitle} (${data.nameA})</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right text-xs border-collapse border border-gray-200">
-                        <thead>
-                            <tr class="bg-kuleyzen-green text-white">
-                                <th class="p-2 border text-center">${t.tblYear}</th>
-                                <th class="p-2 border text-center">${t.tblTotal}</th>
-                                ${mNames.map(month => `<th class="p-2 border text-center">${month}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>`;
-
-            data.a.matrix.forEach(row => {
-                matrixHtml += `<tr class="border-b hover:bg-gray-50">
-                    <td class="p-2 border font-bold text-center bg-gray-100">${row.year}</td>
-                    <td class="p-2 border font-bold bg-gray-50">${row.total}</td>
-                    ${row.months.map(val => `<td class="p-2 border">${val}</td>`).join('')}
-                </tr>`;
-            });
-
-            matrixHtml += `<tr class="bg-gray-200 font-bold">
-                <td class="p-2 border text-center">${t.tblAvg}</td>
-                <td class="p-2 border">${data.a.avgYearlyRain}</td>
-                ${data.a.bottomAverages.map(val => `<td class="p-2 border text-blue-700">${val}</td>`).join('')}
-            </tr>`;
-
-            matrixHtml += `</tbody></table></div>`;
-
+            // 2. MONATS-MATRIZEN (Dynamisch basierend auf Checkboxen)
+            let matrixHtml = `<div class="mt-8">`;
+            
+            if (data.params.rain) {
+                matrixHtml += buildMatrixHtml(data.a.matrices.rain, t.tblMatrixRain, data.nameA, t, mNames);
+                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.rain, t.tblMatrixRain, data.nameB, t, mNames);
+            }
+            if (data.params.temp) {
+                matrixHtml += buildMatrixHtml(data.a.matrices.temp, t.tblMatrixTemp, data.nameA, t, mNames);
+                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.temp, t.tblMatrixTemp, data.nameB, t, mNames);
+            }
+            if (data.params.sun) {
+                matrixHtml += buildMatrixHtml(data.a.matrices.sun, t.tblMatrixSun, data.nameA, t, mNames);
+                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.sun, t.tblMatrixSun, data.nameB, t, mNames);
+            }
+            if (data.params.wind) {
+                matrixHtml += buildMatrixHtml(data.a.matrices.wind, t.tblMatrixWind, data.nameA, t, mNames);
+                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.wind, t.tblMatrixWind, data.nameB, t, mNames);
+            }
+            
+            matrixHtml += `</div>`;
             container.innerHTML = html + matrixHtml;
         }
 
