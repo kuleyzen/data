@@ -14,60 +14,136 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { kuleyzen: { green: '#0b3d0b', light: '#f4f4f4' } },
-                    fontFamily: { sans: ['Inter', 'Arial', 'sans-serif'] }
+                    colors: { 
+                        kuleyzen: { 
+                            green: '#0b3d0b', 
+                            light: '#f4f4f4' 
+                        } 
+                    },
+                    fontFamily: { 
+                        sans: ['Inter', 'Arial', 'sans-serif'] 
+                    }
                 }
             }
         }
 
         const translations = {
             tr: {
-                title: "Kuleyzen Data", subtitle: "Proje Yönetimi & Outsourcing – Yerel değerlere bağlı, küresel standartlarla yönetilen.",
-                navFarm: "Kuleyzen Çiftliği", navConsulting: "Danışmanlık", navData: "Veri Uygulaması",
-                panelTitle: "ANALİZ PANELİ", startLabel: "BAŞLANGIÇ TARİHİ", endLabel: "BİTİŞ TARİHİ",
-                paramTitle: "VERİ PARAMETRELERİ", paramRain: "Yağış", paramTemp: "Sıcaklık",
-                paramSun: "Güneşlenme", paramWind: "Rüzgar Hızı", compareLabel: "Karşılaştırma Modu",
-                btnAction: "VERİLERİ ANALİZ ET", previewTitle: "VERİ ÖNİZLEME", btnPdf: "PDF OLARAK İNDİR",
-                alertSelect: "Lütfen harita üzerinden bir yer seçin.", footer: "Kuleyzen Data © 2026 – Altınözü, Türkiye",
-                loadingData: "NASA VERİLERİ YÜKLENİYOR...", loadingPdf: "PDF HAZIRLANIYOR...", 
-                errorPdf: "PDF Hatası! Lütfen tekrar deneyin.", errorConn: "Bağlantı Hatası! Lütfen sayfayı yenileyin.",
-                tblParam: "Parametre", tblLocA: "Lokasyon A", tblLocB: "Lokasyon B",
-                tblRain: "Toplam Yağış (mm)", tblTemp: "Ortalama Sıcaklık (°C)", tblSun: "Güneşlenme (kWh/m²)", tblWind: "Rüzgar Hızı (m/s)",
-                tblMatrixRain: "Aylık Yağış Tablosu (mm)", tblMatrixTemp: "Aylık Sıcaklık Tablosu (°C)", 
-                tblMatrixSun: "Aylık Güneşlenme Tablosu (kWh/m²)", tblMatrixWind: "Aylık Rüzgar Hızı Tablosu (m/s)",
-                tblAvg: "ORTALAMA", tblYear: "Yıl", tblTotalAvg: "Top/Ort"
+                title: "Kuleyzen Data", 
+                subtitle: "Proje Yönetimi & Outsourcing – Yerel değerlere bağlı, küresel standartlarla yönetilen.",
+                navFarm: "Kuleyzen Çiftliği", 
+                navConsulting: "Danışmanlık", 
+                navData: "Veri Uygulaması",
+                panelTitle: "ANALİZ PANELİ", 
+                startLabel: "BAŞLANGIÇ TARİHİ", 
+                endLabel: "BİTİŞ TARİHİ",
+                paramTitle: "VERİ PARAMETRELERİ", 
+                paramRain: "Yağış", 
+                paramTemp: "Sıcaklık",
+                paramSun: "Güneşlenme", 
+                paramWind: "Rüzgar Hızı", 
+                compareLabel: "Karşılaştırma Modu",
+                btnAction: "VERİLERİ ANALİZ ET", 
+                previewTitle: "VERİ ÖNİZLEME", 
+                btnPdf: "PDF OLARAK İNDİR",
+                alertSelect: "Lütfen harita üzerinden bir yer seçin.", 
+                footer: "Kuleyzen Data © 2026 – Altınözü, Türkiye",
+                loadingData: "VERİLER YÜKLENİYOR...", 
+                loadingPdf: "PDF HAZIRLANIYOR...", 
+                errorPdf: "PDF Hatası! Lütfen tekrar deneyin.", 
+                errorConn: "Bağlantı Hatası! Lütfen sayfayı yenileyin.",
+                tblParam: "Parametre", 
+                tblLocA: "Lokasyon A", 
+                tblLocB: "Lokasyon B",
+                tblRain: "Toplam Yağış (mm)", 
+                tblTemp: "Ortalama Sıcaklık (°C)", 
+                tblSun: "Toplam Güneşlenme (kWh/m²)", 
+                tblWind: "Rüzgar Hızı (m/s)",
+                tblMatrixRain: "Aylık Yağış Tablosu (mm)", 
+                tblMatrixTemp: "Aylık Sıcaklık Tablosu (°C)", 
+                tblMatrixSun: "Aylık Güneşlenme Tablosu (kWh/m²)", 
+                tblMatrixWind: "Aylık Rüzgar Hızı Tablosu (m/s)",
+                tblAvg: "ORTALAMA", 
+                tblYear: "Yıl", 
+                tblTotalAvg: "Top/Ort"
             },
             en: {
-                title: "Kuleyzen Data", subtitle: "Project Management & Outsourcing – Global Standards.",
-                navFarm: "Kuleyzen Farm", navConsulting: "Consulting", navData: "Data App",
-                panelTitle: "ANALYSIS PANEL", startLabel: "START DATE", endLabel: "END DATE",
-                paramTitle: "DATA PARAMETERS", paramRain: "Precipitation", paramTemp: "Temperature",
-                paramSun: "Insolation", paramWind: "Wind Speed", compareLabel: "Comparison Mode",
-                btnAction: "ANALYZE DATA", previewTitle: "DATA PREVIEW", btnPdf: "DOWNLOAD PDF",
-                alertSelect: "Please select a location on the map.", footer: "Kuleyzen Data © 2026 – Altınözü, Turkey",
-                loadingData: "LOADING NASA DATA...", loadingPdf: "PREPARING PDF...", 
-                errorPdf: "PDF Error! Please try again.", errorConn: "Connection Error! Please refresh the page.",
-                tblParam: "Parameter", tblLocA: "Location A", tblLocB: "Location B",
-                tblRain: "Total Rain (mm)", tblTemp: "Avg. Temperature (°C)", tblSun: "Insolation (kWh/m²)", tblWind: "Wind Speed (m/s)",
-                tblMatrixRain: "Monthly Rain Matrix (mm)", tblMatrixTemp: "Monthly Temp Matrix (°C)", 
-                tblMatrixSun: "Monthly Insolation Matrix (kWh/m²)", tblMatrixWind: "Monthly Wind Matrix (m/s)",
-                tblAvg: "AVERAGE", tblYear: "Year", tblTotalAvg: "Total/Avg"
+                title: "Kuleyzen Data", 
+                subtitle: "Project Management & Outsourcing – Global Standards.",
+                navFarm: "Kuleyzen Farm", 
+                navConsulting: "Consulting", 
+                navData: "Data App",
+                panelTitle: "ANALYSIS PANEL", 
+                startLabel: "START DATE", 
+                endLabel: "END DATE",
+                paramTitle: "DATA PARAMETERS", 
+                paramRain: "Precipitation", 
+                paramTemp: "Temperature",
+                paramSun: "Total Insolation", 
+                paramWind: "Wind Speed", 
+                compareLabel: "Comparison Mode",
+                btnAction: "ANALYZE DATA", 
+                previewTitle: "DATA PREVIEW", 
+                btnPdf: "DOWNLOAD PDF",
+                alertSelect: "Please select a location on the map.", 
+                footer: "Kuleyzen Data © 2026 – Altınözü, Turkey",
+                loadingData: "LOADING DATA...", 
+                loadingPdf: "PREPARING PDF...", 
+                errorPdf: "PDF Error! Please try again.", 
+                errorConn: "Connection Error! Please refresh the page.",
+                tblParam: "Parameter", 
+                tblLocA: "Location A", 
+                tblLocB: "Location B",
+                tblRain: "Total Rain (mm)", 
+                tblTemp: "Avg. Temperature (°C)", 
+                tblSun: "Total Insolation (kWh/m²)", 
+                tblWind: "Wind Speed (m/s)",
+                tblMatrixRain: "Monthly Rain Matrix (mm)", 
+                tblMatrixTemp: "Monthly Temp Matrix (°C)", 
+                tblMatrixSun: "Monthly Insolation Matrix (kWh/m²)", 
+                tblMatrixWind: "Monthly Wind Matrix (m/s)",
+                tblAvg: "AVERAGE", 
+                tblYear: "Year", 
+                tblTotalAvg: "Total/Avg"
             },
             de: {
-                title: "Kuleyzen Data", subtitle: "Projektmanagement & Outsourcing – Lokale Werte.",
-                navFarm: "Kuleyzen Çiftliği", navConsulting: "Beratung", navData: "Daten-App",
-                panelTitle: "ANALYSE-PANEL", startLabel: "STARTDATUM", endLabel: "ENDDATUM",
-                paramTitle: "DATEN-PARAMETER", paramRain: "Niederschlag", paramTemp: "Temperatur",
-                paramSun: "Sonneneinstrahlung", paramWind: "Windgeschwindigkeit", compareLabel: "Vergleichsmodus",
-                btnAction: "DATEN ANALYSIEREN", previewTitle: "DATEN-VORSCHAU", btnPdf: "PDF HERUNTERLADEN",
-                alertSelect: "Bitte wählen Sie einen Standort auf der Karte.", footer: "Kuleyzen Data © 2026 – Altınözü, Türkei",
-                loadingData: "NASA DATEN WERDEN GELADEN...", loadingPdf: "PDF WIRD ERSTELLT...", 
-                errorPdf: "PDF-Fehler! Bitte erneut versuchen.", errorConn: "Verbindungsfehler! Bitte Seite neu laden.",
-                tblParam: "Parameter", tblLocA: "Standort A", tblLocB: "Standort B",
-                tblRain: "Niederschlag (mm)", tblTemp: "Ø Temperatur (°C)", tblSun: "Sonneneinstrahlung (kWh/m²)", tblWind: "Windgeschwindigkeit (m/s)",
-                tblMatrixRain: "Monatl. Niederschlagsmatrix (mm)", tblMatrixTemp: "Monatl. Temperaturmatrix (°C)", 
-                tblMatrixSun: "Monatl. Sonneneinstrahlungsmatrix (kWh/m²)", tblMatrixWind: "Monatl. Windmatrix (m/s)",
-                tblAvg: "DURCHSCHNITT", tblYear: "Jahr", tblTotalAvg: "Gesamt/Ø"
+                title: "Kuleyzen Data", 
+                subtitle: "Projektmanagement & Outsourcing – Lokale Werte.",
+                navFarm: "Kuleyzen Çiftliği", 
+                navConsulting: "Beratung", 
+                navData: "Daten-App",
+                panelTitle: "ANALYSE-PANEL", 
+                startLabel: "STARTDATUM", 
+                endLabel: "ENDDATUM",
+                paramTitle: "DATEN-PARAMETER", 
+                paramRain: "Niederschlag", 
+                paramTemp: "Temperatur",
+                paramSun: "Sonneneinstrahlung (Gesamt)", 
+                paramWind: "Windgeschwindigkeit", 
+                compareLabel: "Vergleichsmodus",
+                btnAction: "DATEN ANALYSIEREN", 
+                previewTitle: "DATEN-VORSCHAU", 
+                btnPdf: "PDF HERUNTERLADEN",
+                alertSelect: "Bitte wählen Sie einen Standort auf der Karte.", 
+                footer: "Kuleyzen Data © 2026 – Altınözü, Türkei",
+                loadingData: "DATEN WERDEN GELADEN...", 
+                loadingPdf: "PDF WIRD ERSTELLT...", 
+                errorPdf: "PDF-Fehler! Bitte erneut versuchen.", 
+                errorConn: "Verbindungsfehler! Bitte Seite neu laden.",
+                tblParam: "Parameter", 
+                tblLocA: "Standort A", 
+                tblLocB: "Standort B",
+                tblRain: "Niederschlag (mm)", 
+                tblTemp: "Ø Temperatur (°C)", 
+                tblSun: "Sonneneinstrahlung (kWh/m²)", 
+                tblWind: "Windgeschwindigkeit (m/s)",
+                tblMatrixRain: "Monatl. Niederschlagsmatrix (mm)", 
+                tblMatrixTemp: "Monatl. Temperaturmatrix (°C)", 
+                tblMatrixSun: "Monatl. Sonneneinstrahlungsmatrix (kWh/m²)", 
+                tblMatrixWind: "Monatl. Windmatrix (m/s)",
+                tblAvg: "DURCHSCHNITT", 
+                tblYear: "Jahr", 
+                tblTotalAvg: "Gesamt/Ø"
             }
         };
 
@@ -80,23 +156,49 @@
         function setLanguage(lang) {
             window.currentLang = lang;
             const t = translations[lang];
+            
+            const sel = document.getElementById('langSelector');
+            if(sel) {
+                sel.value = lang;
+            }
+
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if(t[key]) el.innerText = t[key];
+                if(t[key]) {
+                    el.innerText = t[key];
+                }
             });
-            if (window.lastReportData) renderTable(window.lastReportData);
+            
+            if (window.lastReportData) {
+                renderTable(window.lastReportData);
+            }
         }
     </script>
 
     <style>
-        .header-bg { background-color: #0b3d0b; }
-        #map { height: 500px; border: 1px solid #ddd; z-index: 1; }
-        .btn-kuleyzen { background-color: #0b3d0b; color: white; transition: all 0.3s; }
-        .btn-kuleyzen:hover { background-color: #155a15; }
-        .btn-kuleyzen:disabled { background-color: #4b634b; cursor: not-allowed; }
-        .marker-b { filter: hue-rotate(140deg); }
-        .lang-btn { cursor: pointer; padding: 4px 10px; font-size: 11px; font-weight: bold; color: white; opacity: 0.8; transition: 0.2s; }
-        .lang-btn:hover { opacity: 1; background-color: rgba(255,255,255,0.2); border-radius: 4px; }
+        .header-bg { 
+            background-color: #0b3d0b; 
+        }
+        #map { 
+            height: 500px; 
+            border: 1px solid #ddd; 
+            z-index: 1; 
+        }
+        .btn-kuleyzen { 
+            background-color: #0b3d0b; 
+            color: white; 
+            transition: all 0.3s; 
+        }
+        .btn-kuleyzen:hover { 
+            background-color: #155a15; 
+        }
+        .btn-kuleyzen:disabled { 
+            background-color: #4b634b; 
+            cursor: not-allowed; 
+        }
+        .marker-b { 
+            filter: hue-rotate(140deg); 
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-gray-50" onload="setLanguage('tr')">
@@ -106,10 +208,16 @@
             <div class="flex justify-end items-start mb-6 md:mb-10">
                 <div class="flex flex-col items-end space-y-4">
                     <img src="logo.png" alt="Logo" class="h-12 md:h-14 w-auto bg-white p-1 rounded shadow">
-                    <div class="flex space-x-1 bg-black/20 p-1 rounded">
-                        <span class="lang-btn" onclick="setLanguage('tr')">TR</span>
-                        <span class="lang-btn" onclick="setLanguage('de')">DE</span>
-                        <span class="lang-btn" onclick="setLanguage('en')">EN</span>
+                    
+                    <div class="relative inline-block w-32">
+                        <select id="langSelector" onchange="setLanguage(this.value)" class="block w-full bg-white/20 hover:bg-white/30 text-white text-xs font-bold py-2 px-3 pr-8 rounded outline-none cursor-pointer appearance-none border border-white/30 transition shadow-sm">
+                            <option value="tr" class="text-gray-800">🇹🇷 Türkçe</option>
+                            <option value="de" class="text-gray-800">🇩🇪 Deutsch</option>
+                            <option value="en" class="text-gray-800">🇬🇧 English</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-white">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -145,15 +253,28 @@
                         <div class="pt-2">
                             <label class="text-[10px] font-bold text-gray-400 uppercase mb-2 block" data-i18n="paramTitle">Parametreler</label>
                             <div class="grid grid-cols-2 gap-3 text-xs">
-                                <label class="flex items-center"><input type="checkbox" id="pRain" checked class="mr-2 w-4 h-4"> <span data-i18n="paramRain">Yağış</span></label>
-                                <label class="flex items-center"><input type="checkbox" id="pTemp" checked class="mr-2 w-4 h-4"> <span data-i18n="paramTemp">Sıcaklık</span></label>
-                                <label class="flex items-center"><input type="checkbox" id="pSun" checked class="mr-2 w-4 h-4"> <span data-i18n="paramSun">Güneş</span></label>
-                                <label class="flex items-center"><input type="checkbox" id="pWind" class="mr-2 w-4 h-4"> <span data-i18n="paramWind">Rüzgar</span></label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="pRain" checked class="mr-2 w-4 h-4"> 
+                                    <span data-i18n="paramRain">Yağış</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="pTemp" checked class="mr-2 w-4 h-4"> 
+                                    <span data-i18n="paramTemp">Sıcaklık</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="pSun" checked class="mr-2 w-4 h-4"> 
+                                    <span data-i18n="paramSun">Güneş</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" id="pWind" class="mr-2 w-4 h-4"> 
+                                    <span data-i18n="paramWind">Rüzgar</span>
+                                </label>
                             </div>
                         </div>
                         <div class="py-4 border-t mt-2">
                             <label class="flex items-center text-xs cursor-pointer group font-semibold text-gray-700">
-                                <input type="checkbox" id="compareMode" class="mr-2 w-4 h-4 text-kuleyzen-green"> <span class="group-hover:text-kuleyzen-green transition" data-i18n="compareLabel">Karşılaştırma Modu</span>
+                                <input type="checkbox" id="compareMode" class="mr-2 w-4 h-4 text-kuleyzen-green"> 
+                                <span class="group-hover:text-kuleyzen-green transition" data-i18n="compareLabel">Karşılaştırma Modu</span>
                             </label>
                         </div>
                         <button onclick="startAnalysis()" id="btnAction" class="w-full btn-kuleyzen py-4 font-bold text-xs md:text-sm uppercase tracking-widest shadow-md rounded-sm" data-i18n="btnAction">VERİLERİ ANALİZ ET</button>
@@ -174,7 +295,7 @@
                 </button>
             </div>
             
-            <div id="previewTableContainer" class="overflow-x-auto text-gray-700 mb-10"></div>
+            <div id="previewTableContainer" class="text-gray-700 mb-10"></div>
         </div>
     </main>
 
@@ -191,46 +312,71 @@
 
         document.getElementById('compareMode').onchange = (e) => {
             isCompare = e.target.checked;
-            if (!isCompare && markerB) { map.removeLayer(markerB); markerB = null; coordsB = null; }
+            if (!isCompare && markerB) { 
+                map.removeLayer(markerB); 
+                markerB = null; 
+                coordsB = null; 
+            }
         };
 
         map.on('click', (e) => {
             if (!isCompare || !markerA) {
-                if (markerA) map.removeLayer(markerA);
+                if (markerA) {
+                    map.removeLayer(markerA);
+                }
                 markerA = L.marker(e.latlng).addTo(map);
                 coordsA = e.latlng;
             } else {
-                if (markerB) map.removeLayer(markerB);
+                if (markerB) {
+                    map.removeLayer(markerB);
+                }
                 markerB = L.marker(e.latlng).addTo(map);
                 markerB._icon.classList.add('marker-b');
                 coordsB = e.latlng;
             }
         });
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw_QZ86NAQX5pk9sm5LA07R64E0H140Uy-thK3_aEdxJfSYvzuGKUAtvN1FQIOdD79pLg/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG4yPcGPkIjk6sHr8U0ZkAihmde6MD-O2eUxt75mB4Zq9l7bsD5VAweAmRKGQqBSNoGQ/exec';
 
         async function getPlaceName(lat, lon, lang) {
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=${lang}`);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=14&accept-language=${lang}`);
                 const data = await res.json();
+                
                 if (data && data.address) {
-                    return data.address.city || data.address.town || data.address.village || data.address.county || data.address.province || "Bilinmeyen Konum";
+                    const a = data.address;
+                    const localName = a.neighbourhood || a.suburb || a.village || a.hamlet || a.town || a.city_district;
+                    const districtName = a.town || a.district || a.county || a.city;
+                    
+                    if (localName && districtName && localName !== districtName) {
+                        return `${localName}, ${districtName}`;
+                    } else if (localName) {
+                        return localName;
+                    } else if (districtName) {
+                        return districtName;
+                    } else {
+                        return a.state || a.province || "Bilinmeyen Konum";
+                    }
                 }
-            } catch(e) { console.warn("Geocoding failed", e); }
+            } catch(e) { 
+                console.warn("Geocoding failed", e); 
+            }
             return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
         }
 
         async function startAnalysis() {
             const t = translations[window.currentLang || 'tr'];
-            if (!coordsA) return alert(t.alertSelect);
+            if (!coordsA) {
+                return alert(t.alertSelect);
+            }
 
             const btn = document.getElementById('btnAction');
-            const originalText = btn.innerText;
             btn.innerText = t.loadingData;
             btn.disabled = true;
 
             const nameA = await getPlaceName(coordsA.lat, coordsA.lng, window.currentLang || 'tr');
             let nameB = null;
+            
             if (isCompare && coordsB) {
                 nameB = await getPlaceName(coordsB.lat, coordsB.lng, window.currentLang || 'tr');
             }
@@ -240,20 +386,26 @@
                 lang: window.currentLang || 'tr',
                 start: document.getElementById('startDate').value,
                 end: document.getElementById('endDate').value,
-                latA: coordsA.lat, lonA: coordsA.lng,
+                latA: coordsA.lat, 
+                lonA: coordsA.lng,
                 nameA: nameA, 
                 nameB: nameB,
                 isCompare: isCompare,
                 latB: isCompare ? coordsB.lat : null,
                 lonB: isCompare ? coordsB.lng : null,
                 params: {
-                    rain: document.getElementById('pRain').checked, temp: document.getElementById('pTemp').checked,
-                    sun: document.getElementById('pSun').checked, wind: document.getElementById('pWind').checked
+                    rain: document.getElementById('pRain').checked, 
+                    temp: document.getElementById('pTemp').checked,
+                    sun: document.getElementById('pSun').checked, 
+                    wind: document.getElementById('pWind').checked
                 }
             };
 
             try {
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify(payload) 
+                });
                 const result = await response.json();
                 
                 if(result.status === "success") {
@@ -262,40 +414,84 @@
                     renderTable(result.data);
                     document.getElementById('previewSection').classList.remove('hidden');
                     document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
-                } else { alert("Backend Error: " + result.message); }
-            } catch(e) { console.error(e); alert(t.errorConn); } 
-            finally { btn.innerText = t.btnAction; btn.disabled = false; }
+                } else { 
+                    alert("Backend Error: " + result.message); 
+                }
+            } catch(e) { 
+                console.error(e); 
+                alert(t.errorConn); 
+            } finally { 
+                btn.innerText = t.btnAction; 
+                btn.disabled = false; 
+            }
         }
 
         function buildMatrixHtml(matrixData, title, locationName, t, mNames) {
-            if (!matrixData || !matrixData.rows || matrixData.rows.length === 0) return '';
-            let html = `<h3 class="mt-8 text-sm font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${title} (${locationName})</h3>
-                <div class="overflow-x-auto mb-6">
-                    <table class="w-full text-right text-xs border-collapse border border-gray-200">
+            if (!matrixData || !matrixData.rows || matrixData.rows.length === 0) {
+                return '';
+            }
+            
+            let html = `
+                <h3 class="mt-4 text-sm font-bold text-kuleyzen-green uppercase border-b pb-2 mb-4">${title} (${locationName})</h3>
+                <div class="overflow-x-auto w-full">
+                    <table class="w-full text-right text-[10px] sm:text-xs border-collapse border border-gray-200">
                         <thead>
                             <tr class="bg-kuleyzen-green text-white">
-                                <th class="p-2 border text-center">${t.tblYear}</th>
-                                <th class="p-2 border text-center">${t.tblTotalAvg}</th>
-                                ${mNames.map(month => `<th class="p-2 border text-center">${month}</th>`).join('')}
+                                <th class="p-1 sm:p-2 border text-center">${t.tblYear}</th>
+                                <th class="p-1 sm:p-2 border text-center">${t.tblTotalAvg}</th>`;
+            
+            mNames.forEach(month => {
+                html += `<th class="p-1 sm:p-2 border text-center">${month}</th>`;
+            });
+            
+            html += `
                             </tr>
                         </thead>
                         <tbody>`;
 
             matrixData.rows.forEach(row => {
-                html += `<tr class="border-b hover:bg-gray-50">
-                    <td class="p-2 border font-bold text-center bg-gray-100">${row.year}</td>
-                    <td class="p-2 border font-bold bg-gray-50">${row.total}</td>
-                    ${row.months.map(val => `<td class="p-2 border">${val}</td>`).join('')}
-                </tr>`;
+                html += `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-1 sm:p-2 border font-bold text-center bg-gray-100">${row.year}</td>
+                    <td class="p-1 sm:p-2 border font-bold bg-gray-50">${row.total}</td>`;
+                
+                row.months.forEach(val => {
+                    let colorClass = "";
+                    if (title.includes("Yağış") || title.includes("Rain") || title.includes("Niederschlag")) {
+                        if(val !== "-" && val !== "0.0") {
+                            let v = parseFloat(val);
+                            if (v > 150) {
+                                colorClass = "bg-blue-600 text-white font-bold";
+                            } else if (v >= 50) {
+                                colorClass = "bg-blue-200 text-black font-bold";
+                            } else if (v >= 10) {
+                                colorClass = "bg-blue-50 text-black";
+                            } else {
+                                colorClass = "bg-yellow-50 text-black";
+                            }
+                        }
+                    }
+                    html += `<td class="p-1 sm:p-2 border ${colorClass}">${val}</td>`;
+                });
+                
+                html += `</tr>`;
             });
 
-            html += `<tr class="bg-gray-200 font-bold">
-                <td class="p-2 border text-center">${t.tblAvg}</td>
-                <td class="p-2 border">${matrixData.avgYearly}</td>
-                ${matrixData.bottomAverages.map(val => `<td class="p-2 border text-blue-700">${val}</td>`).join('')}
-            </tr>`;
-
-            html += `</tbody></table></div>`;
+            html += `
+            <tr class="bg-gray-200 font-bold">
+                <td class="p-1 sm:p-2 border text-center">${t.tblAvg}</td>
+                <td class="p-1 sm:p-2 border">${matrixData.avgYearly}</td>`;
+            
+            matrixData.bottomAverages.forEach(val => {
+                html += `<td class="p-1 sm:p-2 border text-blue-700">${val}</td>`;
+            });
+            
+            html += `
+            </tr>
+            </tbody>
+        </table>
+        </div>`;
+            
             return html;
         }
 
@@ -304,38 +500,92 @@
             const mNames = monthNames[window.currentLang || 'tr'];
             const container = document.getElementById('previewTableContainer');
             
-            // 1. ZUSAMMENFASSUNGSTABELLE
-            let html = `<table class="w-full text-left text-sm border-collapse bg-white border border-gray-100">
-                <thead><tr class="bg-gray-100 border-b">
-                    <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">${t.tblParam}</th>
-                    <th class="p-4 border-r font-bold text-kuleyzen-green uppercase tracking-tighter">${data.nameA}</th>
-                    ${data.isCompare ? `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">${data.nameB}</th>` : ''}
-                </tr></thead><tbody>`;
+            let html = `
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm border-collapse bg-white border border-gray-100 min-w-[500px]">
+                    <thead>
+                        <tr class="bg-gray-100 border-b">
+                            <th class="p-4 border-r font-bold text-gray-500 uppercase tracking-tighter">${t.tblParam}</th>
+                            <th class="p-4 border-r font-bold text-kuleyzen-green uppercase tracking-tighter">${data.nameA}</th>`;
             
-            if(data.a.rain) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblRain}</td><td class="p-4 border-r font-bold text-blue-600">${data.a.rain}</td>${data.isCompare ? `<td class="p-4 font-bold text-blue-800">${data.b.rain}</td>` : ''}</tr>`;
-            if(data.a.tempAvg) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblTemp}</td><td class="p-4 border-r font-bold text-red-500">${data.a.tempAvg}</td>${data.isCompare ? `<td class="p-4 font-bold text-red-700">${data.b.tempAvg}</td>` : ''}</tr>`;
-            if(data.a.sun) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblSun}</td><td class="p-4 border-r font-bold text-yellow-500">${data.a.sun}</td>${data.isCompare ? `<td class="p-4 font-bold text-yellow-600">${data.b.sun}</td>` : ''}</tr>`;
-            if(data.a.wind) html += `<tr class="border-b hover:bg-gray-50"><td class="p-4 border-r font-medium">${t.tblWind}</td><td class="p-4 border-r font-bold text-gray-500">${data.a.wind}</td>${data.isCompare ? `<td class="p-4 font-bold text-gray-700">${data.b.wind}</td>` : ''}</tr>`;
-            html += `</tbody></table>`;
+            if (data.isCompare) {
+                html += `<th class="p-4 font-bold text-green-700 uppercase tracking-tighter">${data.nameB}</th>`;
+            }
+            
+            html += `
+                        </tr>
+                    </thead>
+                    <tbody>`;
+            
+            if (data.a.rain) {
+                html += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-4 border-r font-medium">${t.tblRain}</td>
+                    <td class="p-4 border-r font-bold text-blue-600">${data.a.rain}</td>`;
+                if (data.isCompare) {
+                    html += `<td class="p-4 font-bold text-blue-800">${data.b.rain}</td>`;
+                }
+                html += `</tr>`;
+            }
+            
+            if (data.a.tempAvg) {
+                html += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-4 border-r font-medium">${t.tblTemp}</td>
+                    <td class="p-4 border-r font-bold text-red-500">${data.a.tempAvg}</td>`;
+                if (data.isCompare) {
+                    html += `<td class="p-4 font-bold text-red-700">${data.b.tempAvg}</td>`;
+                }
+                html += `</tr>`;
+            }
+            
+            if (data.a.sun) {
+                html += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-4 border-r font-medium">${t.tblSun}</td>
+                    <td class="p-4 border-r font-bold text-yellow-500">${data.a.sun}</td>`;
+                if (data.isCompare) {
+                    html += `<td class="p-4 font-bold text-yellow-600">${data.b.sun}</td>`;
+                }
+                html += `</tr>`;
+            }
+            
+            if (data.a.wind) {
+                html += `<tr class="border-b hover:bg-gray-50">
+                    <td class="p-4 border-r font-medium">${t.tblWind}</td>
+                    <td class="p-4 border-r font-bold text-gray-500">${data.a.wind}</td>`;
+                if (data.isCompare) {
+                    html += `<td class="p-4 font-bold text-gray-700">${data.b.wind}</td>`;
+                }
+                html += `</tr>`;
+            }
+            
+            html += `
+                    </tbody>
+                </table>
+            </div>`;
 
-            // 2. MONATS-MATRIZEN (Dynamisch basierend auf Checkboxen)
-            let matrixHtml = `<div class="mt-8">`;
+            let matrixHtml = `<div class="mt-10 space-y-12">`;
             
+            function buildPairHtml(title, matA, matB, nameA, nameB) {
+                let gridClass = data.isCompare ? "grid grid-cols-1 xl:grid-cols-2 gap-6" : "grid grid-cols-1";
+                let pairHtml = `<div class="${gridClass}">`;
+                pairHtml += `<div>${buildMatrixHtml(matA, title, nameA, t, mNames)}</div>`;
+                if (data.isCompare && matB) {
+                    pairHtml += `<div>${buildMatrixHtml(matB, title, nameB, t, mNames)}</div>`;
+                }
+                pairHtml += `</div>`;
+                return pairHtml;
+            }
+
             if (data.params.rain) {
-                matrixHtml += buildMatrixHtml(data.a.matrices.rain, t.tblMatrixRain, data.nameA, t, mNames);
-                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.rain, t.tblMatrixRain, data.nameB, t, mNames);
+                matrixHtml += buildPairHtml(t.tblMatrixRain, data.a.matrices.rain, data.isCompare ? data.b.matrices.rain : null, data.nameA, data.nameB);
             }
             if (data.params.temp) {
-                matrixHtml += buildMatrixHtml(data.a.matrices.temp, t.tblMatrixTemp, data.nameA, t, mNames);
-                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.temp, t.tblMatrixTemp, data.nameB, t, mNames);
+                matrixHtml += buildPairHtml(t.tblMatrixTemp, data.a.matrices.temp, data.isCompare ? data.b.matrices.temp : null, data.nameA, data.nameB);
             }
             if (data.params.sun) {
-                matrixHtml += buildMatrixHtml(data.a.matrices.sun, t.tblMatrixSun, data.nameA, t, mNames);
-                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.sun, t.tblMatrixSun, data.nameB, t, mNames);
+                matrixHtml += buildPairHtml(t.tblMatrixSun, data.a.matrices.sun, data.isCompare ? data.b.matrices.sun : null, data.nameA, data.nameB);
             }
             if (data.params.wind) {
-                matrixHtml += buildMatrixHtml(data.a.matrices.wind, t.tblMatrixWind, data.nameA, t, mNames);
-                if (data.isCompare && data.b) matrixHtml += buildMatrixHtml(data.b.matrices.wind, t.tblMatrixWind, data.nameB, t, mNames);
+                matrixHtml += buildPairHtml(t.tblMatrixWind, data.a.matrices.wind, data.isCompare ? data.b.matrices.wind : null, data.nameA, data.nameB);
             }
             
             matrixHtml += `</div>`;
@@ -344,18 +594,32 @@
 
         async function generatePDF() {
             const t = translations[window.currentLang || 'tr'];
-            if (!window.lastReportData) return;
+            if (!window.lastReportData) {
+                return;
+            }
             
             const btn = document.getElementById('btnPdf');
             btn.innerText = t.loadingPdf;
             btn.disabled = true;
 
             try {
-                const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "createPDF", data: window.lastReportData }) });
+                const response = await fetch(SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ 
+                        action: "createPDF", 
+                        data: window.lastReportData 
+                    }) 
+                });
                 const result = await response.json();
-                if(result.url) window.open(result.url, '_blank');
-            } catch(e) { alert(t.errorPdf); } 
-            finally { btn.innerText = t.btnPdf; btn.disabled = false; }
+                if(result.url) {
+                    window.open(result.url, '_blank');
+                }
+            } catch(e) { 
+                alert(t.errorPdf); 
+            } finally { 
+                btn.innerText = t.btnPdf; 
+                btn.disabled = false; 
+            }
         }
     </script>
 </body>
