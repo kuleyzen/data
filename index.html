@@ -48,7 +48,7 @@
                 btnPdf: "PDF OLARAK İNDİR",
                 alertSelect: "Lütfen harita üzerinden bir yer seçin.", 
                 footer: "Kuleyzen Data © 2026 – Altınözü, Türkiye",
-                loadingData: "VERİLER YÜKLENİYOR...", 
+                loadingData: "HAVA DURUMU EKLENİYOR...", 
                 loadingPdf: "PDF HAZIRLANIYOR...", 
                 errorPdf: "PDF Hatası! Lütfen tekrar deneyin.", 
                 errorConn: "Bağlantı Hatası! Lütfen sayfayı yenileyin.",
@@ -87,7 +87,7 @@
                 btnPdf: "DOWNLOAD PDF",
                 alertSelect: "Please select a location on the map.", 
                 footer: "Kuleyzen Data © 2026 – Altınözü, Turkey",
-                loadingData: "LOADING DATA...", 
+                loadingData: "FETCHING WEATHER DATA...", 
                 loadingPdf: "PREPARING PDF...", 
                 errorPdf: "PDF Error! Please try again.", 
                 errorConn: "Connection Error! Please refresh the page.",
@@ -126,7 +126,7 @@
                 btnPdf: "PDF HERUNTERLADEN",
                 alertSelect: "Bitte wählen Sie einen Standort auf der Karte.", 
                 footer: "Kuleyzen Data © 2026 – Altınözü, Türkei",
-                loadingData: "DATEN WERDEN GELADEN...", 
+                loadingData: "WETTERDATEN WERDEN GELADEN...", 
                 loadingPdf: "PDF WIRD ERSTELLT...", 
                 errorPdf: "PDF-Fehler! Bitte erneut versuchen.", 
                 errorConn: "Verbindungsfehler! Bitte Seite neu laden.",
@@ -336,7 +336,8 @@
             }
         });
 
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxG4yPcGPkIjk6sHr8U0ZkAihmde6MD-O2eUxt75mB4Zq9l7bsD5VAweAmRKGQqBSNoGQ/exec';
+        // HIER DEINE NEUE GOOGLE APPS SCRIPT URL EINTRAGEN (Version 32)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYuR4G3_Tw2H4ogeu5pgXEjb-G2rd_JOv2GurvoC4qwKuv2LbRxQ-i8ogmk7KaQvxs3g/exec';
 
         async function getPlaceName(lat, lon, lang) {
             try {
@@ -381,27 +382,53 @@
                 nameB = await getPlaceName(coordsB.lat, coordsB.lng, window.currentLang || 'tr');
             }
 
-            const payload = {
-                action: "getData",
-                lang: window.currentLang || 'tr',
-                start: document.getElementById('startDate').value,
-                end: document.getElementById('endDate').value,
-                latA: coordsA.lat, 
-                lonA: coordsA.lng,
-                nameA: nameA, 
-                nameB: nameB,
-                isCompare: isCompare,
-                latB: isCompare ? coordsB.lat : null,
-                lonB: isCompare ? coordsB.lng : null,
-                params: {
-                    rain: document.getElementById('pRain').checked, 
-                    temp: document.getElementById('pTemp').checked,
-                    sun: document.getElementById('pSun').checked, 
-                    wind: document.getElementById('pWind').checked
-                }
-            };
+            const startStr = document.getElementById('startDate').value;
+            const endStr = document.getElementById('endDate').value;
 
             try {
+                // 1. Wetterdaten direkt im Browser (Frontend) abrufen, um Google-Sperren zu umgehen
+                const urlA = `https://archive-api.open-meteo.com/v1/archive?latitude=${coordsA.lat.toFixed(4)}&longitude=${coordsA.lng.toFixed(4)}&start_date=${startStr}&end_date=${endStr}&daily=temperature_2m_mean,precipitation_sum,wind_speed_10m_max,shortwave_radiation_sum&timezone=auto`;
+                const resA = await fetch(urlA);
+                const rawA = await resA.json();
+
+                if (rawA.error) {
+                    throw new Error(rawA.reason || "Open-Meteo API Error Loc A");
+                }
+
+                let rawB = null;
+                if (isCompare && coordsB) {
+                    const urlB = `https://archive-api.open-meteo.com/v1/archive?latitude=${coordsB.lat.toFixed(4)}&longitude=${coordsB.lng.toFixed(4)}&start_date=${startStr}&end_date=${endStr}&daily=temperature_2m_mean,precipitation_sum,wind_speed_10m_max,shortwave_radiation_sum&timezone=auto`;
+                    const resB = await fetch(urlB);
+                    rawB = await resB.json();
+                    
+                    if (rawB.error) {
+                        throw new Error(rawB.reason || "Open-Meteo API Error Loc B");
+                    }
+                }
+
+                // 2. Die abgerufenen Rohdaten an das Google Apps Script Backend senden
+                const payload = {
+                    action: "getData",
+                    lang: window.currentLang || 'tr',
+                    start: startStr,
+                    end: endStr,
+                    latA: coordsA.lat, 
+                    lonA: coordsA.lng,
+                    nameA: nameA, 
+                    nameB: nameB,
+                    isCompare: isCompare,
+                    latB: isCompare ? coordsB.lat : null,
+                    lonB: isCompare ? coordsB.lng : null,
+                    params: {
+                        rain: document.getElementById('pRain').checked, 
+                        temp: document.getElementById('pTemp').checked,
+                        sun: document.getElementById('pSun').checked, 
+                        wind: document.getElementById('pWind').checked
+                    },
+                    rawA: rawA, // NEU: Die kompletten Wetterdaten für A
+                    rawB: rawB  // NEU: Die kompletten Wetterdaten für B
+                };
+
                 const response = await fetch(SCRIPT_URL, { 
                     method: 'POST', 
                     body: JSON.stringify(payload) 
@@ -419,7 +446,7 @@
                 }
             } catch(e) { 
                 console.error(e); 
-                alert(t.errorConn); 
+                alert(t.errorConn + " Detay: " + e.message); 
             } finally { 
                 btn.innerText = t.btnAction; 
                 btn.disabled = false; 
