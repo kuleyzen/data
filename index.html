@@ -9,6 +9,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -65,7 +68,12 @@
                 tblMatrixWind: "Aylık Rüzgar Hızı Tablosu (m/s)",
                 tblAvg: "ORTALAMA", 
                 tblYear: "Yıl", 
-                tblTotalAvg: "Top/Ort"
+                tblTotalAvg: "Top/Ort",
+                chatTitle: "YAPAY ZEKA VERİ ANALİSTİ",
+                chatPlaceholder: "Verilerle ilgili bir soru sorun (örn: Sıcaklık eğrisini çiz)...",
+                chatSend: "GÖNDER",
+                chatDisclaimer: "Bu yapay zeka sadece yukarıdaki verileri analiz etmek için eğitilmiştir.",
+                chatLoading: "Analiz ediliyor..."
             },
             en: {
                 title: "Kuleyzen Data", 
@@ -104,7 +112,12 @@
                 tblMatrixWind: "Monthly Wind Matrix (m/s)",
                 tblAvg: "AVERAGE", 
                 tblYear: "Year", 
-                tblTotalAvg: "Total/Avg"
+                tblTotalAvg: "Total/Avg",
+                chatTitle: "AI DATA ANALYST",
+                chatPlaceholder: "Ask a question about the data (e.g., Draw the temperature curve)...",
+                chatSend: "SEND",
+                chatDisclaimer: "This AI is trained exclusively to analyze the data presented above.",
+                chatLoading: "Analyzing..."
             },
             de: {
                 title: "Kuleyzen Data", 
@@ -143,7 +156,12 @@
                 tblMatrixWind: "Monatl. Windmatrix (m/s)",
                 tblAvg: "DURCHSCHNITT", 
                 tblYear: "Jahr", 
-                tblTotalAvg: "Gesamt/Ø"
+                tblTotalAvg: "Gesamt/Ø",
+                chatTitle: "KI DATENANALYST",
+                chatPlaceholder: "Frage zu den Daten stellen (z.B. Zeichne die Temperaturkurve)...",
+                chatSend: "SENDEN",
+                chatDisclaimer: "Diese KI ist ausschließlich für die Analyse der obigen Wetterdaten trainiert.",
+                chatLoading: "Wird analysiert..."
             }
         };
 
@@ -168,6 +186,13 @@
                     el.innerText = t[key];
                 }
             });
+
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if(t[key]) {
+                    el.placeholder = t[key];
+                }
+            });
             
             if (window.lastReportData) {
                 renderTable(window.lastReportData);
@@ -176,29 +201,16 @@
     </script>
 
     <style>
-        .header-bg { 
-            background-color: #0b3d0b; 
-        }
-        #map { 
-            height: 500px; 
-            border: 1px solid #ddd; 
-            z-index: 1; 
-        }
-        .btn-kuleyzen { 
-            background-color: #0b3d0b; 
-            color: white; 
-            transition: all 0.3s; 
-        }
-        .btn-kuleyzen:hover { 
-            background-color: #155a15; 
-        }
-        .btn-kuleyzen:disabled { 
-            background-color: #4b634b; 
-            cursor: not-allowed; 
-        }
-        .marker-b { 
-            filter: hue-rotate(140deg); 
-        }
+        .header-bg { background-color: #0b3d0b; }
+        #map { height: 500px; border: 1px solid #ddd; z-index: 1; }
+        .btn-kuleyzen { background-color: #0b3d0b; color: white; transition: all 0.3s; }
+        .btn-kuleyzen:hover { background-color: #155a15; }
+        .btn-kuleyzen:disabled { background-color: #4b634b; cursor: not-allowed; }
+        .marker-b { filter: hue-rotate(140deg); }
+        
+        .markdown-body table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 12px; }
+        .markdown-body th, .markdown-body td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+        .markdown-body th { background-color: #f3f4f6; font-weight: bold; }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-gray-50" onload="setLanguage('tr')">
@@ -296,6 +308,19 @@
             </div>
             
             <div id="previewTableContainer" class="text-gray-700 mb-10"></div>
+            
+            <div id="aiChatSection" class="mt-10 border-t border-gray-200 pt-8">
+                <h3 class="text-lg font-bold text-kuleyzen-green uppercase tracking-widest mb-4" data-i18n="chatTitle">YAPAY ZEKA VERİ ANALİSTİ</h3>
+                
+                <div id="chatMessages" class="bg-gray-100 border border-gray-200 p-4 h-96 overflow-y-auto mb-4 flex flex-col space-y-4 text-sm rounded-sm">
+                    </div>
+                
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" class="flex-1 border border-gray-300 p-3 outline-none focus:border-kuleyzen-green text-sm rounded-sm shadow-inner" data-i18n-placeholder="chatPlaceholder" placeholder="Verilerle ilgili bir soru sorun (örn: Sıcaklık eğrisini çiz)..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" id="btnChatSend" class="btn-kuleyzen px-6 py-3 font-bold text-xs uppercase tracking-widest rounded-sm shadow-md" data-i18n="chatSend">GÖNDER</button>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 text-center" data-i18n="chatDisclaimer">Bu yapay zeka sadece yukarıdaki verileri analiz etmek için eğitilmiştir.</p>
+            </div>
         </div>
     </main>
 
@@ -336,8 +361,10 @@
             }
         });
 
-        // HIER DEINE NEUE GOOGLE APPS SCRIPT URL EINTRAGEN (Version 32)
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwYuR4G3_Tw2H4ogeu5pgXEjb-G2rd_JOv2GurvoC4qwKuv2LbRxQ-i8ogmk7KaQvxs3g/exec';
+
+        // HIER DEINEN KOPIERTEN QWEN API KEY EINTRAGEN
+        const QWEN_API_KEY = 'sk-ws-djI.iNv6hPgHyJX0VnbrTt_FJFJGqo0w9s6NXJ7mYALkeaI19dP1GzHiLxMTdxipd6_U2aFRDougyUTWxBKI9H70YoK3TiXI_JtPhBBR7KGOi6XfljktxGZX5Qe5ehfLf8Ry.MEUCIGiVshvOWgdqDXVqf0xJsHXNMf4Ol68UAEiEXQ9S20GkAiEArWjX1PRsdEz--Ydr9CWKrCw1rHi6nME9jYn9H3mkdZw';
 
         async function getPlaceName(lat, lon, lang) {
             try {
@@ -386,7 +413,6 @@
             const endStr = document.getElementById('endDate').value;
 
             try {
-                // 1. Wetterdaten direkt im Browser (Frontend) abrufen, um Google-Sperren zu umgehen
                 const urlA = `https://archive-api.open-meteo.com/v1/archive?latitude=${coordsA.lat.toFixed(4)}&longitude=${coordsA.lng.toFixed(4)}&start_date=${startStr}&end_date=${endStr}&daily=temperature_2m_mean,precipitation_sum,wind_speed_10m_max,shortwave_radiation_sum&timezone=auto`;
                 const resA = await fetch(urlA);
                 const rawA = await resA.json();
@@ -406,7 +432,6 @@
                     }
                 }
 
-                // 2. Die abgerufenen Rohdaten an das Google Apps Script Backend senden
                 const payload = {
                     action: "getData",
                     lang: window.currentLang || 'tr',
@@ -425,8 +450,8 @@
                         sun: document.getElementById('pSun').checked, 
                         wind: document.getElementById('pWind').checked
                     },
-                    rawA: rawA, // NEU: Die kompletten Wetterdaten für A
-                    rawB: rawB  // NEU: Die kompletten Wetterdaten für B
+                    rawA: rawA,
+                    rawB: rawB
                 };
 
                 const response = await fetch(SCRIPT_URL, { 
@@ -439,8 +464,11 @@
                     result.data.params = payload.params; 
                     window.lastReportData = result.data;
                     renderTable(result.data);
+                    
                     document.getElementById('previewSection').classList.remove('hidden');
                     document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth' });
+                    
+                    document.getElementById('chatMessages').innerHTML = '';
                 } else { 
                     alert("Backend Error: " + result.message); 
                 }
@@ -451,6 +479,90 @@
                 btn.innerText = t.btnAction; 
                 btn.disabled = false; 
             }
+        }
+
+        async function sendChatMessage() {
+            const inputEl = document.getElementById('chatInput');
+            const message = inputEl.value.trim();
+            if(!message || !window.lastReportData) return;
+
+            const t = translations[window.currentLang || 'tr'];
+            const chatMessages = document.getElementById('chatMessages');
+            
+            chatMessages.innerHTML += `<div class="self-end bg-kuleyzen-green text-white p-3 rounded-l-lg rounded-tr-lg max-w-[80%] shadow-sm">${message}</div>`;
+            inputEl.value = '';
+
+            const loadingId = 'load-' + Date.now();
+            chatMessages.innerHTML += `<div id="${loadingId}" class="self-start bg-gray-200 text-gray-800 p-3 rounded-r-lg rounded-tl-lg italic text-xs shadow-sm">${t.chatLoading}</div>`;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            const lang = window.currentLang || 'tr';
+            
+            const sysPrompt = `Du bist der Kuleyzen Datenanalyst. Du antwortest ausschließlich in der Sprache mit dem Code: ${lang}. 
+            Hier sind die verarbeiteten JSON-Wetterdaten für Location A (${window.lastReportData.nameA}): ${JSON.stringify(window.lastReportData.a)}
+            ${window.lastReportData.isCompare ? 'Hier sind Vergleichsdaten für Location B (' + window.lastReportData.nameB + '): ' + JSON.stringify(window.lastReportData.b) : ''}
+            
+            REGELN:
+            1. Beantworte nur Fragen zu diesen Daten. Wenn eine Frage nichts mit Wetter, Klima oder diesen Daten zu tun hat, antworte exakt mit: 'Diese KI dient nur der Analyse dieser Daten.' (übersetzt in die Sprache ${lang}).
+            2. Erfinde niemals Daten.
+            3. Wenn der Nutzer nach einer Tabelle fragt, gib sie im Markdown-Format aus.
+            4. WICHTIG: Wenn der Nutzer ein Diagramm oder eine Kurve verlangt (z.B. Temperaturkurve, Balkendiagramm), gib AUSSCHLIESSLICH einen gültigen Chart.js JSON-Konfigurationsblock innerhalb von \`\`\`json und \`\`\` aus. Schreibe keinen Text vor oder nach dem JSON-Block.
+            Das JSON muss das Format { "type": "line", "data": {...}, "options": {...} } haben.`;
+
+            try {
+                const res = await fetch('https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${QWEN_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "qwen-turbo",
+                        messages: [
+                            { role: "system", content: sysPrompt },
+                            { role: "user", content: message }
+                        ]
+                    })
+                });
+
+                const data = await res.json();
+                document.getElementById(loadingId).remove();
+                
+                if(data.choices && data.choices[0]) {
+                    let aiMsg = data.choices[0].message.content;
+                    
+                    // Hexadezimale Regex für die absolut sichere Code-Interpretation
+                    const chartRegex = new RegExp("\\x60\\x60\\x60json\\s*(\\{[\\s\\S]*?\\})\\s*\\x60\\x60\\x60");
+                    const chartMatch = aiMsg.match(chartRegex);
+                    
+                    if (chartMatch) {
+                        try {
+                            const chartConfig = JSON.parse(chartMatch[1]);
+                            const canvasId = 'chart-' + Date.now();
+                            chatMessages.innerHTML += `<div class="self-start bg-white border border-gray-200 p-4 rounded-r-lg rounded-tl-lg w-[100%] max-w-3xl shadow-sm"><canvas id="${canvasId}"></canvas></div>`;
+                            
+                            setTimeout(() => {
+                                new Chart(document.getElementById(canvasId), chartConfig);
+                            }, 100);
+                            
+                            const replaceRegex = new RegExp("\\x60\\x60\\x60json\\s*\\{[\\s\\S]*?\\}\\s*\\x60\\x60\\x60");
+                            aiMsg = aiMsg.replace(replaceRegex, '').trim();
+                        } catch (e) {
+                            console.error("Fehler beim Parsen der Chart-JSON", e);
+                        }
+                    }
+
+                    if (aiMsg !== '') {
+                        chatMessages.innerHTML += `<div class="self-start bg-white border border-gray-200 p-3 rounded-r-lg rounded-tl-lg max-w-[90%] markdown-body shadow-sm">${marked.parse(aiMsg)}</div>`;
+                    }
+                } else if (data.error) {
+                    throw new Error(data.error.message || "API Error");
+                }
+            } catch (err) {
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                chatMessages.innerHTML += `<div class="self-start bg-red-100 text-red-800 p-3 rounded-r-lg rounded-tl-lg text-xs border border-red-200">Hata: Lütfen API anahtarını (QWEN_API_KEY) kontrol edin. Detay: ${err.message}</div>`;
+            }
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function buildMatrixHtml(matrixData, title, locationName, t, mNames) {
